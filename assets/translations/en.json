@@ -1,0 +1,11 @@
+{
+  "code": "Code",
+  "pass": "Password",
+  "sign": "Sign in",
+  "changePassword": "Change Password ?",
+  "search": "Search Employee",
+  "clear": "clear",
+  "sign in":"sign in",
+  "sign out": "sign out",
+  "sign in employee": "sign in employee"
+}
