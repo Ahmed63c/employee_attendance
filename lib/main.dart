@@ -1,6 +1,8 @@
 
+import 'package:employeeattendance/ViewModels/LoginViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
 import 'Utils/AppLocalization.dart';
 import 'View/LoginView.dart';
@@ -34,7 +36,14 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Cairo',
       ),
 
-      home: Login(),
+      home:  MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) =>LoginViewModel(),
+          )
+        ],
+        child: Login(),
+      ),
+
 
     );
   }

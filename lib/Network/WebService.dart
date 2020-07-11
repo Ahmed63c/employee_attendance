@@ -2,33 +2,16 @@ import 'package:dio/dio.dart';
 
 import 'ApiClient.dart';
 class WebService {
-  var dio = DioProvider.instance();
-//
-//  Future<List<NewsArticle>> fetchTopHeadlines() async {
-//    try {
-//      String url =
-//          'https://newsapi.org/v2/top-headlines?country=us&apiKey=16451bb2039f440a95c6f22529cbce3e';
-//      final response = await dio.get(url,options:Options(
-//          followRedirects: false,
-//          validateStatus: (status) { return status < 500; }
-//      ));
-//
-//      if (response.statusCode == 200) {
-//        final result = response.data;
-//        Iterable list = result['articles'];
-//        return list.map((article) => NewsArticle.fromJson(article)).toList();
-//      } else {
-//        return [];
-//      }
-//    } on Exception catch (e) {
-//      if(e is DioError){
-//        return [];
-//      }
-//      else{
-//        return [];
-//      }
-//    }
-//  }
+  Dio dio;
+  //constructor
+   WebService(){
+     dio = DioProvider.instance();
+  }
+
+  Dio getInstanceOfDio(){
+     return dio;
+  }
+
 
 
   String _handleError(Error error) {

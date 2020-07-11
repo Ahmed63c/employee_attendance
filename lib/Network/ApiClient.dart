@@ -1,11 +1,12 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:employeeattendance/Utils/Constant.dart';
 
 class DioProvider {
   static Dio instance() {
     final dio = Dio();
     dio.options=new BaseOptions(
-      baseUrl:'https://newsapi.org/v2/top-headlines?country=us&apiKey=16451bb2039f440a95c6f22529cbce3e',
+      baseUrl:Constant.BASE_URL,
       receiveDataWhenStatusError: true,
       connectTimeout: 60*1000, // 60 seconds
       receiveTimeout: 60*1000, // 60 s
