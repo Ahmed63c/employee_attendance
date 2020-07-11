@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:employeeattendance/Utils/AppLocalization.dart';
 import 'package:employeeattendance/Utils/AppProperties.dart';
 import 'package:employeeattendance/Utils/LocationHelper.dart';
@@ -5,7 +8,11 @@ import 'package:employeeattendance/View/CheckInEmployee.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path/path.dart' as path;
 
 import 'SearchView.dart';
 
@@ -18,15 +25,15 @@ class EmployeeView extends StatefulWidget {
 }
 
 class EmployeeViewState extends State<EmployeeView>{
+  PermissionStatus _status;
+
 
 
   @override
   void initState() {
     super.initState();
     print("hi");
-
-
-
+    runFirst();
   }
   @override
   Widget build(BuildContext context) {
@@ -73,7 +80,9 @@ class EmployeeViewState extends State<EmployeeView>{
               child: GestureDetector(
                 onTap: () {
                  // open camera and location
-                  _getLocation();
+                 // _getLocation();
+                  getImage();
+
                 },
                 child: Column(
                   children: <Widget>[
@@ -218,6 +227,7 @@ class EmployeeViewState extends State<EmployeeView>{
     final postion = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(postion.latitude, postion.longitude,localeIdentifier: "ar");
     print(postion);
+    print(" hi after position");
     print(placemark[0].subThoroughfare);
     print(placemark[0].thoroughfare);
     print(placemark[0].locality);
@@ -225,6 +235,86 @@ class EmployeeViewState extends State<EmployeeView>{
 
 
  }
+
+  runFirst() async {
+    await Permission.locationWhenInUse.status.then(_updateStatus);
+    await _requestPerms();
+    if (_status == PermissionStatus.granted) {
+//      Navigator.push(
+//          context, MaterialPageRoute(builder: (context) => NextPage()));
+    bool gpsEnabled=_gpsService() as bool;
+    if (gpsEnabled)
+    print("granted");
+    } else if (_status == PermissionStatus.denied) {
+//      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+      print("permission denied");
+
+
+    }
+  }
+
+  void _updateStatus(PermissionStatus value) {
+    setState(() {
+      _status = value;
+    });
+  }
+
+  void _requestPerms() async {
+    Map<Permission, PermissionStatus> statuses = await
+    [
+      Permission.locationWhenInUse,
+    ].request();
+
+
+    if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
+      _updateStatus(PermissionStatus.granted);
+      //openAppSettings();
+    }
+  }
+
+  Future _gpsService() async {
+    if (!(await Geolocator().isLocationServiceEnabled())) {
+      _checkGps();
+      return null;
+    } else
+      return true;
+  }
+
+  /*Show dialog if GPS not enabled and open settings location*/
+  Future _checkGps() async {
+    if (!(await Geolocator().isLocationServiceEnabled())) {
+      if (Theme.of(context).platform == TargetPlatform.android) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Can't get gurrent location"),
+                content:const Text('Please make sure you enable GPS and try again'),
+                actions: <Widget>[
+                  FlatButton(child: Text('Ok'),
+                      onPressed: () {
+//                        final AndroidIntent intent = AndroidIntent(
+//                            action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+//                        intent.launch();
+                        Navigator.of(context, rootNavigator: true).pop();
+                        _gpsService();
+                      })],
+              );
+            });
+      }
+    }
+  }
+
+  void getImage() async{
+    PickedFile image=await ImagePicker.platform.pickImage(source: ImageSource.camera);
+    final File file = File(image.path);
+    print('Original path: ${image.path}');
+    String dir = path.dirname(image.path);
+    String newPath = path.join(dir, 'name.jpg');
+    print('NewPath: ${newPath}');
+    file.renameSync(newPath);
+  }
+}
 
 //  _getCurrentLocation() {
 //    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
@@ -239,5 +329,6 @@ class EmployeeViewState extends State<EmployeeView>{
 //      print(e);
 //    });
 //  }
-}
+
+
 
