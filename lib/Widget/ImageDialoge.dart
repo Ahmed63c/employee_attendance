@@ -12,7 +12,7 @@ class ImageDialog extends StatelessWidget {
         height: MediaQuery.of(context).size.height-300,
         decoration: BoxDecoration(
             image: DecorationImage(
-                image: ExactAssetImage('assets/images/profile.png'),
+                image: NetworkImage(Image),
                 fit: BoxFit.cover
             )
         ),

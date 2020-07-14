@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:employeeattendance/Utils/AppLocalization.dart';
 import 'package:employeeattendance/Utils/AppProperties.dart';
+import 'package:employeeattendance/Utils/Constant.dart';
 import 'package:employeeattendance/Utils/LocationHelper.dart';
-import 'package:employeeattendance/View/CheckInEmployee.dart';
+import 'package:employeeattendance/Utils/SharedPrefrence.dart';
+import 'package:employeeattendance/View/RegisterEmployee.dart';
+import 'package:employeeattendance/ViewModels/EmployeeViewModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -13,6 +14,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
 
 import 'SearchView.dart';
 
@@ -21,24 +23,72 @@ class EmployeeView extends StatefulWidget {
   State<StatefulWidget> createState() {
     return EmployeeViewState();
   }
-
 }
 
-class EmployeeViewState extends State<EmployeeView>{
+class EmployeeViewState extends State<EmployeeView> {
   PermissionStatus _status;
-
-
+  static String name="";
+  var vm;
 
   @override
   void initState() {
     super.initState();
-    print("hi");
+   StorageUtil.getInstance().then((storage){
+      name="مرحبا "+StorageUtil.getString(Constant.SHARED_USER_NAME);});
     runFirst();
   }
+
   @override
   Widget build(BuildContext context) {
-    return
-      Scaffold(
+    BuildContext dialogContext;
+
+    return Consumer<EmployeeViewModel>(
+
+      builder: (context, model, child) => Stack(
+        children: [
+          // Use SomeExpensiveWidget here, without rebuilding every time.
+          child,
+          Visibility(
+            visible:model.loadingStatus==LoadingStatus.searching,
+            child: Center(child: CupertinoActivityIndicator()),
+          ),
+          Visibility(
+            visible:model.loadingStatus==LoadingStatus.error,
+            child: Center(child:
+            AlertDialog(
+              title: Text("خطأ ما"),
+              content:Text(model.error),
+                actions: <Widget>[
+                  FlatButton(
+                      child: Text('موافق'),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: false).pop(dialogContext);
+                      })
+                ]
+            )
+            ),
+          ),
+
+          Visibility(
+            visible:model.loadingStatus==LoadingStatus.completed,
+            child: Center(child: AlertDialog(
+              title: Text("التسجيل"),
+              content: const Text(
+                  'تم التسجيل بنجاح'),
+                actions: <Widget>[
+                  FlatButton(
+                      child: Text('موافق'),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop(dialogContext);
+                      })
+                ]
+            )),
+          ),
+
+        ],
+      ),
+      // Build the expensive widget here.
+      child: Scaffold(
         appBar: AppBar(
           actions: <Widget>[
             IconButton(
@@ -52,8 +102,7 @@ class EmployeeViewState extends State<EmployeeView>{
           ],
           brightness: Brightness.light,
           backgroundColor: Colors.white70,
-          title: Text(
-            'مرحبا محمد ',
+          title: Text(name,
             style: TextStyle(
                 color: Colors.black,
                 fontFamily: "Cairo",
@@ -71,18 +120,16 @@ class EmployeeViewState extends State<EmployeeView>{
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Container(
-              margin: EdgeInsets.only(left: 8,right: 8,top: 16),
+              margin: EdgeInsets.only(left: 8, right: 8, top: 16),
               height: 140,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(10)),
+                  color: Colors.green, borderRadius: BorderRadius.circular(10)),
               child: GestureDetector(
                 onTap: () {
-                 // open camera and location
-                 // _getLocation();
-                  getImage();
-
+                  // open camera and location
+                  _getLocation();
+                  getImage("attending",null);
                 },
                 child: Column(
                   children: <Widget>[
@@ -91,14 +138,14 @@ class EmployeeViewState extends State<EmployeeView>{
                           width: 60,
                           height: 100,
                           child: ImageIcon(
-                            AssetImage("assets/images/login.png",),
+                            AssetImage(
+                              "assets/images/login.png",
+                            ),
                             color: Colors.white,
                           ),
-                        )
-                    ),
+                        )),
                     Container(
-                      child:
-                      Padding(
+                      child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 4),
                         child: Text(
                           "تسجيل الحضور",
@@ -117,12 +164,12 @@ class EmployeeViewState extends State<EmployeeView>{
               ),
             ),
             Container(
-              margin: EdgeInsets.only(left: 8,right: 8,top: 16),
+              margin: EdgeInsets.only(left: 8, right: 8, top: 16),
               height: 140,
               width: MediaQuery.of(context).size.width,
-
               decoration: BoxDecoration(
-                  color: Colors.redAccent, borderRadius: BorderRadius.circular(8)),
+                  color: Colors.redAccent,
+                  borderRadius: BorderRadius.circular(8)),
               child: GestureDetector(
                 onTap: () {
 //            setState(() {
@@ -131,22 +178,21 @@ class EmployeeViewState extends State<EmployeeView>{
 //                  .push(MaterialPageRoute(builder: (_) => ProductPage()));
 //              print("tapped");
                 },
-                child:
-                Column(
+                child: Column(
                   children: <Widget>[
                     Center(
                         child: Container(
                           width: 60,
                           height: 100,
                           child: ImageIcon(
-                            AssetImage("assets/images/logout.png",),
+                            AssetImage(
+                              "assets/images/logout.png",
+                            ),
                             color: Colors.white,
                           ),
-                        )
-                    ),
+                        )),
                     Container(
-                      child:
-                      Padding(
+                      child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 4),
                         child: Text(
                           "تسجيل الانصراف",
@@ -165,35 +211,32 @@ class EmployeeViewState extends State<EmployeeView>{
               ),
             ),
             Container(
-              margin: EdgeInsets.only(left: 8,right: 8,top: 16),
+              margin: EdgeInsets.only(left: 8, right: 8, top: 16),
               height: 140,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
-                  color: AppProperties.lightnavyregister, borderRadius: BorderRadius.circular(8)),
+                  color: AppProperties.lightnavyregister,
+                  borderRadius: BorderRadius.circular(8)),
               child: GestureDetector(
                 onTap: () {
-//            setState(() {
-//            });
-//              Navigator.of(context)
-//                  .push(MaterialPageRoute(builder: (_) => ProductPage()));
-//              print("tapped");
+                  Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => RegisterEmployee()));
                 },
-                child:
-                Column(
+                child: Column(
                   children: <Widget>[
                     Center(
                         child: Container(
                           width: 60,
                           height: 100,
                           child: ImageIcon(
-                            AssetImage("assets/images/registerr.png",),
+                            AssetImage(
+                              "assets/images/registerr.png",
+                            ),
                             color: Colors.white,
                           ),
-                        )
-                    ),
+                        )),
                     Container(
-                      child:
-                      Padding(
+                      child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 4),
                         child: Text(
                           "تسجيل عامل اخر",
@@ -211,45 +254,21 @@ class EmployeeViewState extends State<EmployeeView>{
                 ),
               ),
             ),
-//            userLocation == null
-//                ? CircularProgressIndicator()
-//                : Text("Location:" +
-//                userLocation.latitude.toString() +
-//                " " +
-//                userLocation.longitude.toString()),
           ],
         ),
-      );
+      ),
+    );
   }
 
-
- _getLocation() async  {
-    final postion = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(postion.latitude, postion.longitude,localeIdentifier: "ar");
-    print(postion);
-    print(" hi after position");
-    print(placemark[0].subThoroughfare);
-    print(placemark[0].thoroughfare);
-    print(placemark[0].locality);
-    print(placemark[0].administrativeArea);
-
-
- }
 
   runFirst() async {
     await Permission.locationWhenInUse.status.then(_updateStatus);
     await _requestPerms();
     if (_status == PermissionStatus.granted) {
-//      Navigator.push(
-//          context, MaterialPageRoute(builder: (context) => NextPage()));
-    bool gpsEnabled=_gpsService() as bool;
-    if (gpsEnabled)
-    print("granted");
+      bool gpsEnabled = await _gpsService();
+      if (gpsEnabled) print("granted");
     } else if (_status == PermissionStatus.denied) {
-//      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
       print("permission denied");
-
-
     }
   }
 
@@ -260,15 +279,15 @@ class EmployeeViewState extends State<EmployeeView>{
   }
 
   void _requestPerms() async {
-    Map<Permission, PermissionStatus> statuses = await
-    [
+    Map<Permission, PermissionStatus> statuses = await [
       Permission.locationWhenInUse,
     ].request();
 
-
     if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
       _updateStatus(PermissionStatus.granted);
-      //openAppSettings();
+//      final AndroidIntent intent = AndroidIntent(
+//          action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+//        intent.launch();
     }
   }
 
@@ -280,7 +299,6 @@ class EmployeeViewState extends State<EmployeeView>{
       return true;
   }
 
-  /*Show dialog if GPS not enabled and open settings location*/
   Future _checkGps() async {
     if (!(await Geolocator().isLocationServiceEnabled())) {
       if (Theme.of(context).platform == TargetPlatform.android) {
@@ -288,47 +306,70 @@ class EmployeeViewState extends State<EmployeeView>{
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Can't get gurrent location"),
-                content:const Text('Please make sure you enable GPS and try again'),
+                title: Text("تحديد الموقع"),
+                content: const Text(
+                    'من فضلك افتح خاصية تحديد موقعك علي الهاتف ثم اضغط موافق'),
                 actions: <Widget>[
-                  FlatButton(child: Text('Ok'),
+                  FlatButton(
+                      child: Text('موافق'),
                       onPressed: () {
-//                        final AndroidIntent intent = AndroidIntent(
-//                            action: 'android.settings.LOCATION_SOURCE_SETTINGS');
-//                        intent.launch();
                         Navigator.of(context, rootNavigator: true).pop();
                         _gpsService();
-                      })],
+                      })
+                ],
               );
             });
       }
     }
   }
 
-  void getImage() async{
-    PickedFile image=await ImagePicker.platform.pickImage(source: ImageSource.camera);
-    final File file = File(image.path);
-    print('Original path: ${image.path}');
-    String dir = path.dirname(image.path);
-    String newPath = path.join(dir, 'name.jpg');
-    print('NewPath: ${newPath}');
-    file.renameSync(newPath);
+  _getLocation() async {
+    final postion = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(
+        postion.latitude, postion.longitude,
+        localeIdentifier: "ar");
+   String lat=postion.longitude.toString();
+   String lang=postion.longitude.toString();
+   String location="${placemark[0].subThoroughfare}" "${placemark[0].thoroughfare}"
+       " ""${placemark[0].locality}" "${placemark[0].administrativeArea}";
+    print(postion);
+    print(lat+"fromfunc");
+    print(lang+"fromfunc");
+    StorageUtil.getInstance().then((storage){
+      StorageUtil.putString(Constant.SHARED_USER_location,location);
+      StorageUtil.putString(Constant.SHARED_USER_lat, lat);
+      StorageUtil.putString(Constant.SHARED_USER_lang,lang);
+    });
+
   }
+
+
+  void getImage(String type,String code) async {
+    var image = await ImagePicker.platform.pickImage(source: ImageSource.camera);
+   final File file = File(image.path);
+   String imagePath=image.path;
+   String fileName=image.path.split('/').last;
+
+   StorageUtil.getInstance().then((storage){
+     String token=StorageUtil.getString(Constant.SHARED_USER_TOKEN);
+     String location=StorageUtil.getString(Constant.SHARED_USER_location);
+     String lat=StorageUtil.getString(Constant.SHARED_USER_lat);
+     String lang=StorageUtil.getString(Constant.SHARED_USER_lang);
+     print("logggggggggggggggggggggggg");
+     print(token);
+     print(type);
+     print(location);
+     print(lat);
+     print(lang);
+     print(imagePath);
+     print(fileName);
+
+     Provider.of<EmployeeViewModel>(context, listen: false).
+      doCreateUserLog(token, type,location,lat,lang,imagePath,fileName,code);
+
+    });
+  }
+
+
 }
-
-//  _getCurrentLocation() {
-//    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-//
-//    geolocator
-//        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-//        .then((Position position) {
-//      setState(() {
-//        _currentPosition = position;
-//      });
-//    }).catchError((e) {
-//      print(e);
-//    });
-//  }
-
-
-

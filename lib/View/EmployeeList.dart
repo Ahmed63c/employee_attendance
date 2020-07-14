@@ -1,10 +1,27 @@
+import 'dart:io';
+import 'package:employeeattendance/Models/EmployeeDetail.dart';
 import 'package:employeeattendance/Utils/AppProperties.dart';
 import 'package:employeeattendance/View/EmployeeData.dart';
 import 'package:employeeattendance/Widget/ImageDialoge.dart';
+import 'package:employeeattendance/Widget/imageProfie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pdfLib;
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
+import 'package:printing/printing.dart';
+
+
+
 
 class EmployeeList extends StatelessWidget{
+
+
+  List<Detail> data;
+
+
+  EmployeeList(this.data);
 
   List<Employee> employees = [
     Employee(
@@ -52,11 +69,69 @@ class EmployeeList extends StatelessWidget{
   ];
   @override
   Widget build(BuildContext context) {
+    download() async{
+      final pdfLib.Document pdf = pdfLib.Document();
+
+      final font = await rootBundle.load("assets/arabic.ttf");
+      final ttf = pdfLib.Font.ttf(font);
+      final fontBold = await rootBundle.load("assets/arabic.ttf");
+      final ttfBold = pdfLib.Font.ttf(fontBold);
+      final fontItalic = await rootBundle.load("assets/arabic.ttf");
+      final ttfItalic = pdfLib.Font.ttf(fontItalic);
+      final fontBoldItalic =
+      await rootBundle.load("assets/arabic.ttf");
+      final ttfBoldItalic = pdfLib.Font.ttf(fontBoldItalic);
+
+      final pdfLib.ThemeData theme = pdfLib.ThemeData.withFont(
+        base: ttf,
+        bold: ttfBold,
+        italic: ttfItalic,
+        boldItalic: ttfBoldItalic,
+      );
+
+      pdf.addPage(
+
+        pdfLib.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          theme:theme,
+          build: (ctx) => [
+            pdfLib.Center(
+                child: pdfLib.Text("بيانات العمال",textDirection: pdfLib.TextDirection.rtl),)
+            ,pdfLib.Table.fromTextArray(context: ctx,
+                data: <List<String>>[<String>['اسم العامل', 'كود العامل','الانصراف','الحضور'],
+                  ...data.map((item) => [item.name.toString(), item.code.toString(),
+                    item.attendingTime.toString(),item.leavingTime.toString()])
+            ]),
+          ],
+        ),
+      );
+
+//      final String dir = (await getApplicationDocumentsDirectory()).path;
+//      print(dir);
+//      final String path = '$dir/employees.pdf';
+//      final File file = File(path);
+//      await file.writeAsBytes(pdf.save());
+
+      Printing.sharePdf(bytes: pdf.save(), filename: 'my-document.pdf');
+
+    }
+
     return Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(
             color: Colors.black,
           ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.cloud_download),
+              color: Colors.black,
+              onPressed: () {
+                download();
+
+              },
+            ),
+
+          ],
           brightness: Brightness.light,
           backgroundColor: Colors.white,
           title: Text(
@@ -68,10 +143,9 @@ class EmployeeList extends StatelessWidget{
 
       body: Column(
         children: <Widget>[
-          SizedBox(height: 16,),
           Flexible(
               child: ListView.separated(
-                  itemCount: employees.length,
+                  itemCount: data.length,
                   shrinkWrap: true,
                   separatorBuilder: (BuildContext context, int index) =>
                       Divider(
@@ -79,7 +153,7 @@ class EmployeeList extends StatelessWidget{
                         indent: 16,
                         endIndent: 16,
                         color: AppProperties.lightnavylogo,
-                        thickness: 0.5,
+                        thickness: 1,
                       ),
                   itemBuilder: (_, index) =>
                    listViewItem(context,index)
@@ -115,7 +189,7 @@ class EmployeeList extends StatelessWidget{
                     Expanded(
                       child: Container(
                         margin: EdgeInsets.only(left: 4,right: 4,top: 8),
-                        child: Text(employees[index].name,overflow: TextOverflow.ellipsis,
+                        child: Text(data[index].name,overflow: TextOverflow.ellipsis,
                           style:
                         TextStyle(fontWeight: FontWeight.w700,fontSize: 18,fontFamily: "Cairo"),),
                       ),
@@ -135,7 +209,7 @@ class EmployeeList extends StatelessWidget{
                     Expanded(
                       child: Container(
                         margin: EdgeInsets.only(left: 4,right: 4,top: 8),
-                        child: Text("1001",overflow: TextOverflow.ellipsis,
+                        child: Text(data[index].code,overflow: TextOverflow.ellipsis,
                           style:
                           TextStyle(fontWeight: FontWeight.w700,fontSize: 18,fontFamily: "Cairo"),),
                       ),
@@ -155,7 +229,7 @@ class EmployeeList extends StatelessWidget{
                     Expanded(
                       child: Container(
                         margin: EdgeInsets.only(left: 4,right: 4,top: 8),
-                        child: Text("2000",overflow: TextOverflow.ellipsis,
+                        child: Text(data[index].salary,overflow: TextOverflow.ellipsis,
                           style:
                           TextStyle(fontWeight: FontWeight.w700,fontSize: 18,fontFamily: "Cairo"),),
                       ),
@@ -175,7 +249,7 @@ class EmployeeList extends StatelessWidget{
                     Expanded(
                       child: Container(
                         margin: EdgeInsets.only(left: 4,right: 4,top: 8),
-                        child: Text("16",overflow: TextOverflow.ellipsis,
+                        child: Text(data[index].additionalHours==null?"":data[index].additionalHours,overflow: TextOverflow.ellipsis,
                           style:
                           TextStyle(fontWeight: FontWeight.w700,fontSize: 18,fontFamily: "Cairo"),),
                       ),
@@ -192,12 +266,12 @@ class EmployeeList extends StatelessWidget{
                         onTap: () async {
                           await showDialog(
                               context: context,
-                              builder: (_) => ImageDialog(employees[index].image)
+                              builder: (_) => ImageDialog(data[index].attendingImg)
                           );
                         },
                       ),
                       maxRadius: 32,
-                      backgroundImage: AssetImage(employees[index].image),
+                      backgroundImage:NetworkImage(data[index].attendingImg),
                     ),
                     Flexible(
                       child: Column(
@@ -213,13 +287,13 @@ class EmployeeList extends StatelessWidget{
                                   TextStyle(fontWeight: FontWeight.w700,fontSize: 16,fontFamily: "Cairo",color: Colors.green),)),
                               Container(
                                   margin: EdgeInsets.only(left: 8,right: 8,top: 4),
-                                  child: Text(employees[index].checkin,style: TextStyle(fontWeight: FontWeight.w500,fontSize: 16,fontFamily: "Cairo"),)),
+                                  child: Text(data[index].attendingTime,style: TextStyle(fontWeight: FontWeight.w500,fontSize: 16,fontFamily: "Cairo"),)),
                             ],
                           ),
                       Container(
                                 margin: EdgeInsets.only(left: 16,right: 16,top: 4),
                                 child:
-                                Text("العاصمه الاداريه الجديده بالحي التامن بجوا مسجد الفتاح العليم  ",
+                                Text(data[index].attendingLocation,
                                   overflow: TextOverflow.ellipsis,
                                   style:
                                 TextStyle(fontWeight: FontWeight.w500,fontSize: 16,fontFamily: "Cairo",color: AppProperties.navylogo),)),
@@ -237,12 +311,12 @@ class EmployeeList extends StatelessWidget{
                         onTap: () async {
                           await showDialog(
                               context: context,
-                              builder: (_) => ImageDialog(employees[index].image)
+                              builder: (_) => ImageDialog(data[index].leavingImg)
                           );
                         },
                       ),
                       maxRadius: 32,
-                      backgroundImage: AssetImage(employees[index].image),
+                      backgroundImage: NetworkImage(data[index].leavingImg==null ? "":data[index].leavingImg),
                     ),
                     Flexible(
                       child: Column(
@@ -258,13 +332,13 @@ class EmployeeList extends StatelessWidget{
                                   TextStyle(fontWeight: FontWeight.w700,fontSize: 16,fontFamily: "Cairo",color: Colors.red),)),
                               Container(
                                   margin: EdgeInsets.only(left: 8,right: 8,top: 4),
-                                  child: Text(employees[index].checkout,style: TextStyle(fontWeight: FontWeight.w500,fontSize: 16,fontFamily: "Cairo"),)),
+                                  child: Text(data[index].leavingTime==null?"":data[index].leavingTime,style: TextStyle(fontWeight: FontWeight.w500,fontSize: 16,fontFamily: "Cairo"),)),
                             ],
                           ),
                           Container(
                               margin: EdgeInsets.only(left: 16,right: 16,top: 4),
                               child:
-                              Text("العاصمه الاداريه الجديده بالحي التامن بجوا مسجد الفتاح العليم  ",
+                              Text(data[index].leavingLocation==null?"":data[index].leavingLocation,
                                 overflow: TextOverflow.ellipsis,
                                 style:
                                 TextStyle(fontWeight: FontWeight.w500,fontSize: 16,fontFamily: "Cairo",color: AppProperties.navylogo),)),
@@ -272,6 +346,8 @@ class EmployeeList extends StatelessWidget{
                     )
                   ],
                 ),
+                SizedBox(height: 4,),
+
               ],
 
         )
@@ -280,6 +356,7 @@ class EmployeeList extends StatelessWidget{
     );
 
 }
+
 
 }
 

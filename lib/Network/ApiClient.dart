@@ -9,7 +9,9 @@ class DioProvider {
       baseUrl:Constant.BASE_URL,
       receiveDataWhenStatusError: true,
       connectTimeout: 60*1000, // 60 seconds
-      receiveTimeout: 60*1000, // 60 s
+      receiveTimeout: 60*1000,
+        followRedirects: true,
+
     );
     dio.interceptors.add(HttpLogInterceptor());
     return dio;

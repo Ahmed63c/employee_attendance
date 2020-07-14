@@ -1,11 +1,11 @@
-class Response {
+class BaseResponse {
   String message;
   String status;
 
-  Response({ this.message, this.status});
+  BaseResponse({ this.message, this.status});
 
-  factory Response.fromJson(Map<String, dynamic> json) {
-    return Response(
+  factory BaseResponse.fromJson(Map<String, dynamic> json) {
+    return BaseResponse(
       message: json['message'],
       status: json['status'],
     );

@@ -7,5 +7,4 @@ class Employee{
 
   Employee(this.name, this.image, this.checkin, this.checkout);
 
-
 }

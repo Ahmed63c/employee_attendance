@@ -1,24 +1,26 @@
 import 'package:employeeattendance/Utils/AppProperties.dart';
 import 'package:employeeattendance/Utils/Constant.dart';
 import 'package:employeeattendance/Utils/SharedPrefrence.dart';
-import 'package:employeeattendance/ViewModels/DeleteEmployeeViewModel.dart';
+import 'package:employeeattendance/ViewModels/ChangePasswordViewModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class DeleteEmployee extends StatefulWidget{
+class ChangePassword extends StatefulWidget{
   @override
-  _DeleteEmployeeState createState() => _DeleteEmployeeState();
+  _ChangePassword createState() => _ChangePassword();
 }
 
-class _DeleteEmployeeState extends State<DeleteEmployee> {
+class _ChangePassword extends State<ChangePassword> {
 
   final controller = TextEditingController();
+  final controllerPass = TextEditingController();
+
   bool _validate = false;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DeleteEmployeeViewModel>(
+    return Consumer<ChangePasswordViewModel>(
       builder: (context,model,child){
 
 
@@ -36,7 +38,7 @@ class _DeleteEmployeeState extends State<DeleteEmployee> {
             brightness: Brightness.light,
             backgroundColor: Colors.white,
             title: Text(
-              'احذف عامل',
+              ' تغيير كلمة المرور',
               style: TextStyle(color: Colors.black),
             ),
             elevation: 4,
@@ -58,6 +60,22 @@ class _DeleteEmployeeState extends State<DeleteEmployee> {
                   ),
                 ),
               ),
+              Padding(
+                padding: EdgeInsets.only(left: 16,right: 16,top: 16),
+                child: TextFormField(
+                  autofocus: false,
+                  obscureText: false,
+                  controller: controllerPass,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: "رقم المرور ",
+                    errorText: _validate ? 'لا يمكن ان يكون الحقل فارغا' : null,
+                    contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+                  ),
+                ),
+              ),
+
 
               Visibility(
                 visible:LoadingStatus.searching==model.loadingStatus,
@@ -67,7 +85,7 @@ class _DeleteEmployeeState extends State<DeleteEmployee> {
                 visible: model.loadingStatus==LoadingStatus.error,
                 child:Container(
                     margin: EdgeInsets.symmetric(horizontal: 20),
-                    child:Center(
+                    child: Center(
                       child: Text(model.error,
                         style:
                         TextStyle(fontSize: 14,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.red),),
@@ -77,8 +95,8 @@ class _DeleteEmployeeState extends State<DeleteEmployee> {
                 visible: model.loadingStatus==LoadingStatus.completed,
                 child:Container(
                     margin: EdgeInsets.symmetric(horizontal: 20),
-                    child: Center(
-                      child: Text("تم حذف العامل بنجاح",
+                    child:  Center(
+                      child: Text("تم تعديل رقم المرور بنجاح",
                         style:
                         TextStyle(fontSize: 14,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.green),),
                     )),
@@ -97,18 +115,14 @@ class _DeleteEmployeeState extends State<DeleteEmployee> {
                     if(!_validate){
                       StorageUtil.getInstance().then((storage){
                         String token=  StorageUtil.getString(Constant.SHARED_USER_TOKEN);
-                        Provider.of<DeleteEmployeeViewModel>(context, listen: false).doDeleteUser(token,controller.text);
+                        Provider.of<ChangePasswordViewModel>(context, listen: false).doChangePassword(token,controller.text,controllerPass.text);
                       });
 
                     }
-//            Navigator.push(
-//              context,
-//              MaterialPageRoute(builder: (context) => EmployeeView()),
-//            );
                   },
                   padding: EdgeInsets.only(left: 32,right: 32,top: 12,bottom: 12),
-                  color:Colors.red,
-                  child: Text("احذف  عامل", style: TextStyle(color: Colors.white)),
+                  color:AppProperties.lightnavylogo,
+                  child: Text(" تأكيد", style: TextStyle(color: Colors.white)),
                 ),
               )
             ],

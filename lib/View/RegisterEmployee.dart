@@ -2,7 +2,12 @@ import 'package:employeeattendance/Utils/AppProperties.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class CheckInEmployee extends StatelessWidget{
+class RegisterEmployee extends StatefulWidget{
+  @override
+  _RegisterEmployeeState createState() => _RegisterEmployeeState();
+}
+
+class _RegisterEmployeeState extends State<RegisterEmployee> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,12 +18,12 @@ class CheckInEmployee extends StatelessWidget{
         brightness: Brightness.light,
         backgroundColor: Colors.white,
         title: Text(
-          ' سجل عامل',
+          'سجل عامل',
           style: TextStyle(color: Colors.black),
         ),
         elevation: 4,
       ),
-      body: Column(
+      body: ListView(
         children: <Widget>[
           Padding(
             padding: EdgeInsets.only(left: 16,right: 16,top: 64),
@@ -32,8 +37,17 @@ class CheckInEmployee extends StatelessWidget{
               ),
             ),
           ),
+           DropdownButton<String>(
+            items: <String>['حضور', 'انصراف'].map((String value) {
+              return new DropdownMenuItem<String>(
+                value: value,
+                child: new Text(value),
+              );
+            }).toList(),
+            onChanged: (_) {},
+          ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 32.0),
+            padding: EdgeInsets.symmetric(vertical: 32.0,horizontal: 32),
             child: RaisedButton(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
@@ -45,7 +59,7 @@ class CheckInEmployee extends StatelessWidget{
 //            );
               },
               padding: EdgeInsets.only(left: 32,right: 32,top: 12,bottom: 12),
-              color:AppProperties.navylogo,
+              color:Colors.green,
               child: Text("سجل عامل", style: TextStyle(color: Colors.white)),
             ),
           )
@@ -53,5 +67,4 @@ class CheckInEmployee extends StatelessWidget{
       ),
     );
   }
-
 }

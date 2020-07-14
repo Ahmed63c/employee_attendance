@@ -1,14 +1,35 @@
 
+import 'package:employeeattendance/View/ChangePasswordView.dart';
+import 'package:employeeattendance/View/EmployeeView.dart';
+import 'package:employeeattendance/ViewModels/AddEmployeeViewModel.dart';
+import 'package:employeeattendance/ViewModels/AdminViewModel.dart';
+import 'package:employeeattendance/ViewModels/ChangePasswordViewModel.dart';
+import 'package:employeeattendance/ViewModels/DeleteEmployeeViewModel.dart';
+import 'package:employeeattendance/ViewModels/EmployeeViewModel.dart';
 import 'package:employeeattendance/ViewModels/LoginViewModel.dart';
+import 'package:employeeattendance/ViewModels/UpdateEmployeeViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'Utils/AppLocalization.dart';
 import 'View/LoginView.dart';
+import 'ViewModels/SearchViewModel.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp( MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) =>LoginViewModel(),),
+      ChangeNotifierProvider(create: (_) =>AdminViewModel(),),
+      ChangeNotifierProvider(create: (_) =>EmployeeViewModel(),),
+      ChangeNotifierProvider(create: (_) =>SearchViewModel(),),
+      ChangeNotifierProvider(create: (_) =>AddEmployeeViewModel(),),
+      ChangeNotifierProvider(create: (_) =>DeleteEmployeeViewModel(),),
+      ChangeNotifierProvider(create: (_) =>UpdateEmployeeViewModel(),),
+      ChangeNotifierProvider(create: (_) =>ChangePasswordViewModel(),)
+    ],
+    child: MyApp(),
+  ),);
 }
 
 class MyApp extends StatelessWidget {
@@ -36,15 +57,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Cairo',
       ),
 
-      home:  MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) =>LoginViewModel(),
-          )
-        ],
-        child: Login(),
-      ),
-
-
+      home: Login(),
     );
   }
 }

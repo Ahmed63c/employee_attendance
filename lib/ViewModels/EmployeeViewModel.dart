@@ -1,60 +1,66 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
-import 'package:employeeattendance/Models/User.dart';
-import 'package:employeeattendance/Network/ApiClient.dart';
+import 'package:employeeattendance/Models/BaseApiResponse.dart';
+import 'package:employeeattendance/Models/SearchModel.dart';
 import 'package:employeeattendance/Network/WebService.dart';
-import 'package:employeeattendance/Utils/Constant.dart';
-import 'package:employeeattendance/Utils/LoadingStatus.dart';
-import 'package:employeeattendance/Utils/SharedPrefrence.dart';
 import 'package:flutter/cupertino.dart';
 
 enum LoadingStatus {
   completed, searching, empty,error
 }
 
-class LoginViewModel with ChangeNotifier{
+class EmployeeViewModel with ChangeNotifier{
 
   var webService=WebService().getInstanceOfDio();
+  LoadingStatus loadingStatus=LoadingStatus.searching;
+  String error="حدث خطأ ما تحقق منن الانترنت وحاول مره أخري";
+  BaseResponse base=new BaseResponse();
+  List<SearchResults> searchResults;
 
-  //at first is empty
-  LoadingStatus loadingStatus=LoadingStatus.empty;
-  String error="";
-  String user_type="";
-  void doLogin(String code,String pass)  async{
 
+  void doCreateUserLog(String token,String type,String
+  location,String lat ,String lang,String imagePath,String fileName,String code) async{
     this.loadingStatus = LoadingStatus.searching;
     notifyListeners();
 
+    FormData formData= FormData.fromMap({
+      "action":"doCreateUserLog",
+      "token": token,
+      "type": type,
+      "location": location,
+      "latitude": lat,
+      "longitude": lang,
+      "image": await MultipartFile.fromFile(imagePath,filename: fileName),
+      "user_code":code
+    });
+
     try {
-      final response = await webService.get("/api.php",queryParameters: {"action":"doLogin","code":code,"password":pass});
+
+      webService.options.contentType="multipart/form-data";
+      final response = await webService.post("",data: formData);
 
       if (response.statusCode == 200) {
 
         var parsedJson = json.decode(response.data);
-        User user = User.fromJson(parsedJson);
-        if(user.status=="01"){
-            this.user_type=user.details.type;
-           StorageUtil.getInstance().then((storage){
-              StorageUtil.putString(Constant.SHARED_USER_NAME, user.details.name);
-              StorageUtil.putString(Constant.SHARED_USER_TYPE, user.details.type);
-              StorageUtil.putString(Constant.SHARED_USER_TOKEN, user.details.token);
-            });
+        base=BaseResponse.fromJson(parsedJson);
 
-            this.loadingStatus=LoadingStatus.completed;
-            notifyListeners();
+
+        if(base.status=="01"){
+          this.loadingStatus=LoadingStatus.completed;
+          notifyListeners();
         }
         else{
           this.loadingStatus = LoadingStatus.error;
-          error=user.message;
+          error=base.message;
           notifyListeners();
-
         }
       }
       else {
         this.loadingStatus = LoadingStatus.error;
         error="حدث خطأ ما تحقق منن الانترنت وحاول مره أخري";
         notifyListeners();
-     }
+      }
     } on Exception catch (e) {
       if(e is DioError){
         this.loadingStatus = LoadingStatus.error;

@@ -18,7 +18,6 @@ class _LoginPageState extends State<Login> {
   var formKey = GlobalKey<FormState>();
   var _scaffFoledKey = GlobalKey<ScaffoldState>();
   bool _isLoading;
-
   TextEditingController codeController = TextEditingController();
   TextEditingController passController = TextEditingController();
 
@@ -78,34 +77,6 @@ class _LoginPageState extends State<Login> {
 
     );
 
-    final loginButton = Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        onPressed: () {
-          if (formKey.currentState.validate()) {
-            print("passed validation");
-            print(codeController.text);
-            print(passController.text);
-            action(vm);
-            Provider.of<LoginViewModel>(context, listen: false).doLogin(
-                codeController.text, passController.text);
-          }
-
-//          Navigator.pushReplacement(
-//            context,
-//            MaterialPageRoute(builder: (context) => EmployeeView()),
-//          );
-        },
-        padding: EdgeInsets.all(12),
-        color: AppProperties.navylogo,
-        child: Text(AppLocalizations.of(context).translate("sign"),
-            style: TextStyle(color: Colors.white)),
-      ),
-    );
-
     final changePassword = FlatButton(
       child: Text(
         AppLocalizations.of(context).translate("changePassword"),
@@ -122,43 +93,155 @@ class _LoginPageState extends State<Login> {
       },
     );
 
-    final form = Form(
-      key: formKey,
-      child: Center(
-        child: ListView(
-          children: <Widget>[
-            logo,
-            SizedBox(height: 32.0),
-            Visibility(
-              visible: _isLoading,
-                child: CupertinoActivityIndicator()),
-            SizedBox(height: 32.0),
 
-            code,
-            SizedBox(height: 8.0),
-            password,
-            SizedBox(height: 16.0),
-            loginButton,
-            changePassword
-          ],
+    Widget loginBtn(BuildContext context,LoginViewModel model){
+     return Padding(
+        padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+        child: RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          onPressed: () {
+            if (formKey.currentState.validate()) {
+              print("passed validation");
+              print(codeController.text);
+              print(passController.text);
+              Provider.of<LoginViewModel>(context, listen: false).doLogin(
+                  codeController.text, passController.text);
+
+             }
+            },
+          padding: EdgeInsets.all(12),
+          color: AppProperties.navylogo,
+          child: Text(AppLocalizations.of(context).translate("sign"),
+              style: TextStyle(color: Colors.white)),
         ),
-      ),
+      );
+    }
+
+
+    Widget form(BuildContext context,LoginViewModel model){
+      return   Form(
+        key: formKey,
+        child: Center(
+          child: ListView(
+            children: <Widget>[
+              logo,
+              SizedBox(height: 32.0),
+              Visibility(
+                visible: isVisable(model),
+                child: Center(child: CupertinoActivityIndicator()),
+              ),
+              SizedBox(height: 32.0),
+              code,
+              SizedBox(height: 8.0),
+              password,
+              Visibility(
+                visible: error(model),
+                child:Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(model.error,
+                      style:
+                      TextStyle(fontSize: 14,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.red),)),
+              ),
+              SizedBox(height: 16.0),
+              loginBtn(context, model),
+              changePassword
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Consumer<LoginViewModel>(
+      builder: (context, model, child){
+
+        WidgetsBinding.instance.addPostFrameCallback((_){
+          // Add Your Code here.
+          if(model.loadingStatus==LoadingStatus.completed){
+            if(model.user_type=="admin"){
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => AdminView()),
+              );
+            }
+
+            else{
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => EmployeeView()),
+              );
+            }
+
+          }
+        });
+        return Scaffold(
+          key: _scaffFoledKey,
+          body: form(context, model),
+        );
+      }
+      // Build the expensive widget here.
     );
 
+//    return Scaffold(
+//        key: _scaffFoledKey,
+//        backgroundColor: Colors.white,
+//        body: form
+//
+//    );
 
-    return Scaffold(
-        key: _scaffFoledKey,
-        backgroundColor: Colors.white,
-        body: form
-
-    );
+//    return Consumer<LoginViewModel>(
+//      builder: (context, model, child) {
+//            return Scaffold(
+//        key: _scaffFoledKey,
+//        backgroundColor: Colors.white,
+//        body: formnew(context,model)
+//            );
+//            },
+//    );
   }
 
-  void showInSnackBar(String value) {
-    _scaffFoledKey.currentState.showSnackBar(
-        new SnackBar(content: new Text(value)));
+  bool isVisable(LoginViewModel vs) {
+    bool v=false;
+
+    if(vs.loadingStatus==LoadingStatus.searching){
+      print("seracho");
+      v=true;
+
+    }
+    else if(vs.loadingStatus==LoadingStatus.completed){
+      print("complete call");
+      v=false;
+    }
+
+    else if (vs.loadingStatus==LoadingStatus.error){
+      //showInSnackBar("حدث خطأ ما تحقق منن الانترنت وحاول مره أخر'");
+    }
+
+    else if(vs.loadingStatus==LoadingStatus.empty){
+      print("empty");
+    }
+    return v;
+
   }
 
+  error(LoginViewModel vs) {
+    bool v=false;
+    if (vs.loadingStatus==LoadingStatus.error){
+      v=true;
+    }
+    return v;
+  }
+
+  Widget showInSnackBar(String value,var key,BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+          return key.currentState.showSnackBar(SnackBar(
+            key: key,
+              content: new Text(value)));
+          }
+        );
+      }
+//
   void showToast(BuildContext context) {
     final scaffold = Scaffold.of(context);
     scaffold.showSnackBar(
@@ -170,27 +253,8 @@ class _LoginPageState extends State<Login> {
     );
   }
 
-  void action(LoginViewModel vs) {
-    switch (vs.loadingStatus) {
-      case LoadingStatus.searching:
-        setState(() {
-           _isLoading=true;
-        });
-        break;
-      case LoadingStatus.completed:
-        print("complete call");
-        break;
-      case LoadingStatus.error:
-        setState(() {
-          _isLoading=false;
-        });
-        showInSnackBar("حدث خطأ ما تحقق منن الانترنت وحاول مره أخر'");
-        break;
-      case LoadingStatus.empty:
-        print("empty");
-        break;
-    }
-  }
+
+
 
 
 }

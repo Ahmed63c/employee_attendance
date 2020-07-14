@@ -1,7 +1,11 @@
 import 'package:employeeattendance/Utils/AppProperties.dart';
 import 'package:employeeattendance/View/AddEmployee.dart';
+import 'package:employeeattendance/View/AdminHome.dart';
+import 'package:employeeattendance/View/ChangePasswordView.dart';
 import 'package:employeeattendance/View/DeleteEmployee.dart';
 import 'package:employeeattendance/View/SearchView.dart';
+import 'package:employeeattendance/View/TimeConfigurationView.dart';
+import 'package:employeeattendance/View/UpdateEmployee.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
@@ -23,8 +27,7 @@ class Settings extends StatelessWidget{
         ),
         elevation: 4,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: ListView(
         children: <Widget>[
           SizedBox(
             height: 8,
@@ -48,6 +51,19 @@ class Settings extends StatelessWidget{
             height: 8,
           ),
           ListTile(
+              title: Text('تعديل بيانات عامل'),
+              leading: Icon(Icons.edit,color: AppProperties.greylogo,),
+              onTap: () => {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => UpdateEmployee())),
+              }
+
+          ),
+
+          SizedBox(
+            height: 8,
+          ),
+          ListTile(
               title: Text('ابحث عن كود عامل'),
               leading: Icon(Icons.search,color: AppProperties.lightnavylogo,),
               onTap: () => {
@@ -61,21 +77,46 @@ class Settings extends StatelessWidget{
             height: 8,
           ),
           ListTile(
+              title: Text('تعديل مواعيد العمل'),
+              leading: Icon(Icons.edit_attributes,color: AppProperties.lightnavylogo,),
+              onTap: () => {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => TimeConfiguration())),
+              }
+
+          ),
+
+          SizedBox(
+            height: 8,
+          ),
+          ListTile(
+              title: Text('تغيير كلمة المرور'),
+              leading: Icon(Icons.security,color: Colors.red,),
+              onTap: () => {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => ChangePassword())),
+              }),
+          SizedBox(height: 8,),
+          ListTile(
               title: Text('تقرير'),
               leading: Icon(Icons.report,color: Colors.blue,),
               onTap: () async {
                 final List<DateTime> picked = await DateRagePicker.showDatePicker(
                     context: context,
-//                    initialFirstDate: new DateTime.now(),
-//                    initialLastDate: (new DateTime.now()).add(new Duration(days: 7)),
-//                    firstDate: new DateTime(2015),
-//                    lastDate: new DateTime(2025)
                     firstDate: DateTime(DateTime.now().year,DateTime.now().month,0),
                     initialFirstDate: DateTime.now(),
-                    initialLastDate: (new DateTime.now()).add(new Duration(days: 7)),
+                    initialLastDate: (new DateTime.now()),
                     lastDate: DateTime.now().add(new Duration(days: 30))
                 );
                 if (picked != null) {
+                  if(picked.length > 1 ){
+                    //monthly report
+                  }
+                  else{
+                    String date=picked[0].toString().split(" ")[0];
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => AdminHome(date)));
+                  }
                   print(picked[0].toString().split(" ")[0]);
                 }
               }

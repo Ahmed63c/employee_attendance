@@ -1,60 +1,54 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:employeeattendance/Models/User.dart';
-import 'package:employeeattendance/Network/ApiClient.dart';
+import 'package:employeeattendance/Models/Report.dart';
 import 'package:employeeattendance/Network/WebService.dart';
-import 'package:employeeattendance/Utils/Constant.dart';
-import 'package:employeeattendance/Utils/LoadingStatus.dart';
-import 'package:employeeattendance/Utils/SharedPrefrence.dart';
 import 'package:flutter/cupertino.dart';
 
 enum LoadingStatus {
   completed, searching, empty,error
 }
 
-class LoginViewModel with ChangeNotifier{
+class AdminViewModel with ChangeNotifier{
+
+  var error="لا يوجد بيانات تحقق من الاتصال بالانترنت وحاول مرة اخري";
+  Report report=new Report();
 
   var webService=WebService().getInstanceOfDio();
+  LoadingStatus loadingStatus=LoadingStatus.searching;
 
-  //at first is empty
-  LoadingStatus loadingStatus=LoadingStatus.empty;
-  String error="";
-  String user_type="";
-  void doLogin(String code,String pass)  async{
+
+  void getDailyReport (String date,String token) async{
 
     this.loadingStatus = LoadingStatus.searching;
     notifyListeners();
 
     try {
-      final response = await webService.get("/api.php",queryParameters: {"action":"doLogin","code":code,"password":pass});
+
+      final response = await webService.get("/api.php",
+          queryParameters: {"action":"getDailyReport","token":token,"date":date});
 
       if (response.statusCode == 200) {
 
         var parsedJson = json.decode(response.data);
-        User user = User.fromJson(parsedJson);
-        if(user.status=="01"){
-            this.user_type=user.details.type;
-           StorageUtil.getInstance().then((storage){
-              StorageUtil.putString(Constant.SHARED_USER_NAME, user.details.name);
-              StorageUtil.putString(Constant.SHARED_USER_TYPE, user.details.type);
-              StorageUtil.putString(Constant.SHARED_USER_TOKEN, user.details.token);
-            });
+         report = Report.fromJson(parsedJson);
 
-            this.loadingStatus=LoadingStatus.completed;
-            notifyListeners();
+        print(report.status);
+
+        if(report.status=="01"){
+          this.loadingStatus=LoadingStatus.completed;
+          notifyListeners();
         }
         else{
           this.loadingStatus = LoadingStatus.error;
-          error=user.message;
+          error=report.message;
           notifyListeners();
-
         }
       }
       else {
         this.loadingStatus = LoadingStatus.error;
         error="حدث خطأ ما تحقق منن الانترنت وحاول مره أخري";
         notifyListeners();
-     }
+      }
     } on Exception catch (e) {
       if(e is DioError){
         this.loadingStatus = LoadingStatus.error;
@@ -71,7 +65,6 @@ class LoginViewModel with ChangeNotifier{
     }
 
   }
-
 
 
 }

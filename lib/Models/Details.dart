@@ -1,4 +1,5 @@
-class UserDetails {
+
+class Details {
     String code;
     String created_at;
     String id;
@@ -7,10 +8,10 @@ class UserDetails {
     String token;
     String type;
 
-    UserDetails({this.code, this.created_at, this.id, this.name, this.salary, this.token, this.type});
+    Details({this.code, this.created_at, this.id, this.name, this.salary, this.token, this.type});
 
-    factory UserDetails.fromJson(Map<String, dynamic> json) {
-        return UserDetails(
+    factory Details.fromJson(Map<String, dynamic> json) {
+        return Details(
             code: json['code'], 
             created_at: json['created_at'], 
             id: json['id'], 

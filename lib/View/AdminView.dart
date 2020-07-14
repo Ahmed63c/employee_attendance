@@ -20,7 +20,7 @@ class AdminView extends  StatefulWidget
 class AdminViewState extends State<AdminView> {
   int  index=0;
   final List<Widget> _children = [
-    AdminHome(),
+    AdminHome(null),
     Settings()
   ];
 
