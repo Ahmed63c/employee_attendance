@@ -1,12 +1,15 @@
 
 import 'package:employeeattendance/View/ChangePasswordView.dart';
 import 'package:employeeattendance/View/EmployeeView.dart';
+import 'package:employeeattendance/View/RegisterEmployee.dart';
 import 'package:employeeattendance/ViewModels/AddEmployeeViewModel.dart';
 import 'package:employeeattendance/ViewModels/AdminViewModel.dart';
 import 'package:employeeattendance/ViewModels/ChangePasswordViewModel.dart';
 import 'package:employeeattendance/ViewModels/DeleteEmployeeViewModel.dart';
 import 'package:employeeattendance/ViewModels/EmployeeViewModel.dart';
 import 'package:employeeattendance/ViewModels/LoginViewModel.dart';
+import 'package:employeeattendance/ViewModels/RegisterEmployeeViewModel.dart';
+import 'package:employeeattendance/ViewModels/TimeConfViewModel.dart';
 import 'package:employeeattendance/ViewModels/UpdateEmployeeViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -26,7 +29,11 @@ void main() {
       ChangeNotifierProvider(create: (_) =>AddEmployeeViewModel(),),
       ChangeNotifierProvider(create: (_) =>DeleteEmployeeViewModel(),),
       ChangeNotifierProvider(create: (_) =>UpdateEmployeeViewModel(),),
-      ChangeNotifierProvider(create: (_) =>ChangePasswordViewModel(),)
+      ChangeNotifierProvider(create: (_) =>ChangePasswordViewModel(),),
+      ChangeNotifierProvider(create: (_) =>TimeConfViewModel(),),
+      ChangeNotifierProvider(create: (_) =>RegisterEmployeeViewModel(),)
+
+
     ],
     child: MyApp(),
   ),);

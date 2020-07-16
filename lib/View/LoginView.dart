@@ -146,7 +146,6 @@ class _LoginPageState extends State<Login> {
               ),
               SizedBox(height: 16.0),
               loginBtn(context, model),
-              changePassword
             ],
           ),
         ),
@@ -159,20 +158,21 @@ class _LoginPageState extends State<Login> {
         WidgetsBinding.instance.addPostFrameCallback((_){
           // Add Your Code here.
           if(model.loadingStatus==LoadingStatus.completed){
+            model.loadingStatus=LoadingStatus.empty;
+
             if(model.user_type=="admin"){
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => AdminView()),
               );
             }
-
             else{
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => EmployeeView()),
               );
             }
-
+            //clear value
           }
         });
         return Scaffold(

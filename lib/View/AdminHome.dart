@@ -105,7 +105,7 @@ class _AdminHomeState extends State<AdminHome> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => EmployeeList(model.report.details)),
+                          MaterialPageRoute(builder: (context) => EmployeeList(model.report.details,"بيانات الحضور")),
                         );
                       },
                     ),
@@ -130,6 +130,12 @@ class _AdminHomeState extends State<AdminHome> {
                             fontSize: 18.0,
                             fontFamily: "Cairo"),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => EmployeeList(model.report.details,"بيانات الغياب")),
+                        );
+                      },
                     ),
                     circularStrokeCap: CircularStrokeCap.round,
                     progressColor: Colors.red,
@@ -163,7 +169,10 @@ class _AdminHomeState extends State<AdminHome> {
                             fontFamily: "Cairo"),
                       ),
                       onTap: () {
-                        print("tapped");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => EmployeeList(model.report.details,"بيانات التأخير")),
+                        );
                       },
                     ),
                     circularStrokeCap: CircularStrokeCap.round,
@@ -187,6 +196,12 @@ class _AdminHomeState extends State<AdminHome> {
                             fontSize: 18.0,
                             fontFamily: "Cairo"),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => EmployeeList(model.report.details,"بيانات الانصراف مبكرا")),
+                        );
+                      },
                     ),
                     circularStrokeCap: CircularStrokeCap.round,
                     progressColor: AppProperties.lightnavylogo,

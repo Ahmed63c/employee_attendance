@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:employeeattendance/Utils/AppProperties.dart';
 import 'package:employeeattendance/Utils/Constant.dart';
-import 'package:employeeattendance/Utils/LocationHelper.dart';
 import 'package:employeeattendance/Utils/SharedPrefrence.dart';
 import 'package:employeeattendance/View/RegisterEmployee.dart';
 import 'package:employeeattendance/ViewModels/EmployeeViewModel.dart';
@@ -34,6 +33,9 @@ class EmployeeViewState extends State<EmployeeView> {
   void initState() {
     super.initState();
    StorageUtil.getInstance().then((storage){
+     StorageUtil.putString(Constant.SHARED_USER_location,null);
+     StorageUtil.putString(Constant.SHARED_USER_lat, null);
+     StorageUtil.putString(Constant.SHARED_USER_lang,null);
       name="مرحبا "+StorageUtil.getString(Constant.SHARED_USER_NAME);});
     runFirst();
   }
@@ -50,39 +52,33 @@ class EmployeeViewState extends State<EmployeeView> {
           child,
           Visibility(
             visible:model.loadingStatus==LoadingStatus.searching,
-            child: Center(child: CupertinoActivityIndicator()),
+            child: Positioned(
+                bottom: MediaQuery.of(context).size.height/ MediaQuery.of(context).size.height+20,
+                left: 20,
+                right: 20,
+                child: CupertinoActivityIndicator()),
           ),
           Visibility(
-            visible:model.loadingStatus==LoadingStatus.error,
-            child: Center(child:
-            AlertDialog(
-              title: Text("خطأ ما"),
-              content:Text(model.error),
-                actions: <Widget>[
-                  FlatButton(
-                      child: Text('موافق'),
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: false).pop(dialogContext);
-                      })
-                ]
-            )
-            ),
+            visible: model.loadingStatus==LoadingStatus.error,
+            child:Positioned(
+              bottom: MediaQuery.of(context).size.height/ MediaQuery.of(context).size.height+20,
+                left: 20,
+                right: 20,
+                child: Material(
+                  child: Text(model.error, style: TextStyle(fontSize: 16,fontWeight:
+                  FontWeight.w500,fontFamily: "Cairo",color: Colors.red),),
+                )),
           ),
-
           Visibility(
-            visible:model.loadingStatus==LoadingStatus.completed,
-            child: Center(child: AlertDialog(
-              title: Text("التسجيل"),
-              content: const Text(
-                  'تم التسجيل بنجاح'),
-                actions: <Widget>[
-                  FlatButton(
-                      child: Text('موافق'),
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop(dialogContext);
-                      })
-                ]
-            )),
+            visible: model.loadingStatus==LoadingStatus.completed,
+            child: Positioned(
+              bottom: MediaQuery.of(context).size.height/ MediaQuery.of(context).size.height+20,
+              left: 20,
+              right: 20,
+              child: Text("تم التسجيل بنجاح",
+                    style:
+                    TextStyle(fontSize: 14,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.green),),
+                )
           ),
 
         ],
@@ -172,11 +168,8 @@ class EmployeeViewState extends State<EmployeeView> {
                   borderRadius: BorderRadius.circular(8)),
               child: GestureDetector(
                 onTap: () {
-//            setState(() {
-//            });
-//              Navigator.of(context)
-//                  .push(MaterialPageRoute(builder: (_) => ProductPage()));
-//              print("tapped");
+                  _getLocation();
+                  getImage("leaving",null);
                 },
                 child: Column(
                   children: <Widget>[

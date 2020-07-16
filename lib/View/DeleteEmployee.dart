@@ -98,7 +98,8 @@ class _DeleteEmployeeState extends State<DeleteEmployee> {
                       StorageUtil.getInstance().then((storage){
                         String token=  StorageUtil.getString(Constant.SHARED_USER_TOKEN);
                         Provider.of<DeleteEmployeeViewModel>(context, listen: false).doDeleteUser(token,controller.text);
-                      });
+                      }
+                      );
 
                     }
 //            Navigator.push(

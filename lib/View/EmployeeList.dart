@@ -12,61 +12,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:printing/printing.dart';
 
-
-
-
 class EmployeeList extends StatelessWidget{
-
 
   List<Detail> data;
 
-
-  EmployeeList(this.data);
-
-  List<Employee> employees = [
-    Employee(
-      "محمد احمد ابراهيمم",
-      'assets/images/profile.png',
-      '8:00:00',
-      '17:00:00',
-    ),
-    Employee(
-      "أحمد عبد الستار علي",
-      'assets/images/profile.png',
-      '8:00:00',
-      '17:00:00',
-    ),
-    Employee(
-      "حسن احمد توفيق",
-      'assets/images/profile.png',
-      '8:00"00',
-      '17:00"00',
-    ),
-    Employee(
-      "محمد احمد ابراهيم",
-      'assets/images/profile.png',
-      '8:00:00',
-      '17:00:00',
-    ),
-    Employee(
-      "ابراهيم احمد عبد الله",
-      'assets/images/profile.png',
-      '8:00:00',
-      '17:00:00',
-    ),
-    Employee(
-      "محمد احمد عزت",
-      'assets/images/profile.png',
-      '8:00:00',
-      '17:00:00',
-    ),
-    Employee(
-      "محمد احمد ابراهيم",
-      'assets/images/profile.png',
-      '8:00:00',
-      '17:00:00',
-    ),
-  ];
+  String pdftitile="";
+  EmployeeList(this.data,this.pdftitile);
   @override
   Widget build(BuildContext context) {
     download() async{
@@ -96,11 +47,13 @@ class EmployeeList extends StatelessWidget{
           theme:theme,
           build: (ctx) => [
             pdfLib.Center(
-                child: pdfLib.Text("بيانات العمال",textDirection: pdfLib.TextDirection.rtl),)
+                child: pdfLib.Text(pdftitile,textDirection: pdfLib.TextDirection.rtl),)
             ,pdfLib.Table.fromTextArray(context: ctx,
-                data: <List<String>>[<String>['اسم العامل', 'كود العامل','الانصراف','الحضور'],
-                  ...data.map((item) => [item.name.toString(), item.code.toString(),
-                    item.attendingTime.toString(),item.leavingTime.toString()])
+                data: <List<String>>[<String>['مكان الانصراف','ميعاد الانصراف','مكان الدخول','ميعاد الدخول','الساعات الاضافيه','المرتب','كود العامل','اسم العامل'],
+                  ...data.map((item) => [item.leavingLocation.toString(), item.leavingTime.toString(),
+                    item.attendingLocation.toString(),item.attendingTime.toString(),
+                    item.additionalHours.toString(),item.salary.toString(),item.code.toString()
+                  ,item.name.toString()])
             ]),
           ],
         ),
@@ -359,11 +312,3 @@ class EmployeeList extends StatelessWidget{
 
 
 }
-
-
-
-
-//CircleAvatar(
-//maxRadius: 32,
-//backgroundImage: AssetImage(employees[index].image),
-//),

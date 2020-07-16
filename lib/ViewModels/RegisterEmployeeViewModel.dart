@@ -10,14 +10,12 @@ enum LoadingStatus {
   completed, searching, empty,error
 }
 
-class EmployeeViewModel with ChangeNotifier{
+class RegisterEmployeeViewModel with ChangeNotifier{
 
   var webService=WebService().getInstanceOfDio();
   LoadingStatus loadingStatus=LoadingStatus.empty;
   String error="حدث خطأ ما تحقق منن الانترنت وحاول مره أخري";
   BaseResponse base=new BaseResponse();
-  List<SearchResults> searchResults;
-
 
   void doCreateUserLog(String token,String type,String
   location,String lat ,String lang,String imagePath,String fileName,String code) async{
