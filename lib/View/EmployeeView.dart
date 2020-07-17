@@ -27,7 +27,10 @@ class EmployeeView extends StatefulWidget {
 class EmployeeViewState extends State<EmployeeView> {
   PermissionStatus _status;
   static String name="";
-  var vm;
+  String  lat;
+  String lang;
+  String location;
+  EmployeeViewModel vm;
 
   @override
   void initState() {
@@ -42,8 +45,8 @@ class EmployeeViewState extends State<EmployeeView> {
 
   @override
   Widget build(BuildContext context) {
+    vm=Provider.of<EmployeeViewModel>(context);
     BuildContext dialogContext;
-
     return Consumer<EmployeeViewModel>(
 
       builder: (context, model, child) => Stack(
@@ -124,7 +127,6 @@ class EmployeeViewState extends State<EmployeeView> {
               child: GestureDetector(
                 onTap: () {
                   // open camera and location
-                  _getLocation();
                   getImage("attending",null);
                 },
                 child: Column(
@@ -168,7 +170,6 @@ class EmployeeViewState extends State<EmployeeView> {
                   borderRadius: BorderRadius.circular(8)),
               child: GestureDetector(
                 onTap: () {
-                  _getLocation();
                   getImage("leaving",null);
                 },
                 child: Column(
@@ -316,25 +317,43 @@ class EmployeeViewState extends State<EmployeeView> {
     }
   }
 
-  _getLocation() async {
+  _getLocation(String type,String code,String imagePath,String fileName) async {
     final postion = await Geolocator()
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(
         postion.latitude, postion.longitude,
         localeIdentifier: "ar");
-   String lat=postion.longitude.toString();
-   String lang=postion.longitude.toString();
-   String location="${placemark[0].subThoroughfare}" "${placemark[0].thoroughfare}"
+    lat=postion.longitude.toString();
+    lang=postion.longitude.toString();
+    location="${placemark[0].subThoroughfare}" "${placemark[0].thoroughfare}"
        " ""${placemark[0].locality}" "${placemark[0].administrativeArea}";
     print(postion);
     print(lat+"fromfunc");
     print(lang+"fromfunc");
-    StorageUtil.getInstance().then((storage){
-      StorageUtil.putString(Constant.SHARED_USER_location,location);
-      StorageUtil.putString(Constant.SHARED_USER_lat, lat);
-      StorageUtil.putString(Constant.SHARED_USER_lang,lang);
-    });
 
+
+    StorageUtil.getInstance().then((storage){
+      String token=StorageUtil.getString(Constant.SHARED_USER_TOKEN);
+      print("logggggggggggggggggggggggg");
+      print(token);
+      print(type);
+      print(location);
+      print(lat);
+      print(lang);
+      print(imagePath);
+      print(fileName);
+      if(lat==null||lang==null||location==null){
+        vm.error="لم نستطيع تحديد موقعك من فضلك افتح خاصيه وتحديد الموقع اولا";
+        vm.loadingStatus==LoadingStatus.error;
+        vm.notifyListeners();
+      }
+      else{
+
+        Provider.of<EmployeeViewModel>(context, listen: false).
+        doCreateUserLog(token, type,location,lat,lang,imagePath,fileName,code);
+
+      }}
+    );
   }
 
 
@@ -343,25 +362,8 @@ class EmployeeViewState extends State<EmployeeView> {
    final File file = File(image.path);
    String imagePath=image.path;
    String fileName=image.path.split('/').last;
+   _getLocation(type,code,imagePath,fileName);
 
-   StorageUtil.getInstance().then((storage){
-     String token=StorageUtil.getString(Constant.SHARED_USER_TOKEN);
-     String location=StorageUtil.getString(Constant.SHARED_USER_location);
-     String lat=StorageUtil.getString(Constant.SHARED_USER_lat);
-     String lang=StorageUtil.getString(Constant.SHARED_USER_lang);
-     print("logggggggggggggggggggggggg");
-     print(token);
-     print(type);
-     print(location);
-     print(lat);
-     print(lang);
-     print(imagePath);
-     print(fileName);
-
-     Provider.of<EmployeeViewModel>(context, listen: false).
-      doCreateUserLog(token, type,location,lat,lang,imagePath,fileName,code);
-
-    });
   }
 
 

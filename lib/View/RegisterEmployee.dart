@@ -21,6 +21,10 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
   TextEditingController codeController = TextEditingController();
   bool _validate = false;
   PermissionStatus _status;
+  String lat;
+  String lang;
+  String location;
+  RegisterEmployeeViewModel vm;
 
 
 
@@ -37,6 +41,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
   @override
   Widget build(BuildContext context) {
+    vm=Provider.of<RegisterEmployeeViewModel>(context);
 
 
     return Consumer<RegisterEmployeeViewModel>(builder:(context,model,child){
@@ -134,11 +139,9 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
                   if(!_validate){
                     if(selectedText=="حضور"){
-                      _getLocation();
                       getImage("attending", codeController.text);
                     }
                     else{
-                      _getLocation();
                       getImage("leaving", codeController.text);
                     }
                   }
@@ -220,39 +223,23 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     }
   }
 
-  _getLocation() async {
+  _getLocation(String type,String code,String imagePath,String fileName) async {
     final postion = await Geolocator()
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(
         postion.latitude, postion.longitude,
         localeIdentifier: "ar");
-    String lat=postion.longitude.toString();
-    String lang=postion.longitude.toString();
-    String location="${placemark[0].subThoroughfare}" "${placemark[0].thoroughfare}"
-        " ""${placemark[0].locality}" "${placemark[0].administrativeArea}";
+    lat=postion.longitude.toString();
+    lang=postion.longitude.toString();
+    location=" ${placemark[0].subThoroughfare}"  "${placemark[0].thoroughfare}"
+        "  ""${placemark[0].locality}"  "${placemark[0].administrativeArea}";
     print(postion);
     print(lat+"fromfunc");
     print(lang+"fromfunc");
-    StorageUtil.getInstance().then((storage){
-      StorageUtil.putString(Constant.SHARED_USER_location,location);
-      StorageUtil.putString(Constant.SHARED_USER_lat, lat);
-      StorageUtil.putString(Constant.SHARED_USER_lang,lang);
-    });
 
-  }
-
-
-  void getImage(String type,String code) async {
-    var image = await ImagePicker.platform.pickImage(source: ImageSource.camera);
-    final File file = File(image.path);
-    String imagePath=image.path;
-    String fileName=image.path.split('/').last;
 
     StorageUtil.getInstance().then((storage){
       String token=StorageUtil.getString(Constant.SHARED_USER_TOKEN);
-      String location=StorageUtil.getString(Constant.SHARED_USER_location);
-      String lat=StorageUtil.getString(Constant.SHARED_USER_lat);
-      String lang=StorageUtil.getString(Constant.SHARED_USER_lang);
       print("logggggggggggggggggggggggg");
       print(token);
       print(type);
@@ -261,10 +248,28 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
       print(lang);
       print(imagePath);
       print(fileName);
+      if(lat==null||lang==null||location==null){
+        vm.error="لم نستطيع تحديد موقعك من فضلك افتح خاصيه وتحديد الموقع اولا";
+        vm.loadingStatus==LoadingStatus.error;
+        vm.notifyListeners();
+      }
+      else{
 
-      Provider.of<RegisterEmployeeViewModel>(context, listen: false).
-      doCreateUserLog(token, type,location,lat,lang,imagePath,fileName,code);
+        Provider.of<RegisterEmployeeViewModel>(context, listen: false).
+        doCreateUserLog(token, type,location,lat,lang,imagePath,fileName,code);
 
-    });
+      }}
+    );
   }
+
+
+  void getImage(String type,String code) async {
+    var image = await ImagePicker.platform.pickImage(source: ImageSource.camera);
+    final File file = File(image.path);
+    String imagePath=image.path;
+    String fileName=image.path.split('/').last;
+    _getLocation(type,code,imagePath,fileName);
+
+  }
+
 }

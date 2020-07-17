@@ -32,8 +32,6 @@ void main() {
       ChangeNotifierProvider(create: (_) =>ChangePasswordViewModel(),),
       ChangeNotifierProvider(create: (_) =>TimeConfViewModel(),),
       ChangeNotifierProvider(create: (_) =>RegisterEmployeeViewModel(),)
-
-
     ],
     child: MyApp(),
   ),);

@@ -10,6 +10,7 @@ import 'package:employeeattendance/View/UpdateEmployee.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 
 class Settings extends StatelessWidget{
@@ -76,6 +77,14 @@ class Settings extends StatelessWidget{
                 _selectDate(context);
               }
           ),
+
+          ListTile(
+              title: Text('تقرير شهري'),
+              leading: Icon(Icons.print,color: Colors.black12,),
+              onTap: ()  {
+                _selectMonth(context);
+              }
+          ),
           ListTile(
               title: Text('تغيير كلمة المرور'),
               leading: Icon(Icons.security,color: Colors.red,),
@@ -109,9 +118,25 @@ class Settings extends StatelessWidget{
             print(picked.toString().split(" ")[0]);
             String date=picked.toString().split(" ")[0];
             Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => AdminHome(date)));
-
-
+                MaterialPageRoute(builder: (_) => AdminHome(date,"day")));
           }
   }
+
+  Future<void> _selectMonth(BuildContext context) async {
+       DateTime selectedDate = DateTime.now();
+
+    Future<DateTime>  picked= showMonthPicker(
+      context: context,
+      firstDate: DateTime(DateTime.now().year - 1, 5),
+      lastDate: DateTime(DateTime.now().year + 1, 9),
+      initialDate: selectedDate,
+      locale: Locale("ar"),
+    ).then((date) {
+      String dateonly=date.toString().split(" ")[0];
+      String monthonly=dateonly.toString().split("-")[1];
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => AdminHome(monthonly,"month")));
+    });
+  }
+
 }
