@@ -139,7 +139,7 @@ class _AddEmployeeState extends State<AddEmployee> {
                    padding: EdgeInsets.only(left: 32,right: 32,top: 8),
                    child: DropdownButton<String>(
                      hint: Text(SelectedText),
-                     items: <String>['عامل', 'مشرف'].map((String value) {
+                     items: <String>['عامل', 'مدير'].map((String value) {
                        return  DropdownMenuItem<String>(
                          value: value,
                          child: new Text(value),

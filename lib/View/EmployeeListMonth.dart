@@ -110,7 +110,7 @@ class EmployeeListMonth extends StatelessWidget {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.cloud_download),
-              color: Colors.black,
+              color: Colors.blue,
               onPressed: () {
                 download();
               },
@@ -259,6 +259,41 @@ class EmployeeListMonth extends StatelessWidget {
             SizedBox(
               height: 4,
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(left: 8, right: 8, top: 8),
+                  child: Text(
+                    "الساعات الإضافيه:",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        fontFamily: "Cairo"),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.only(left: 4, right: 4, top: 8),
+                    child: Text(
+                      data[index].additionalHours == "0"
+                          ? "لايوجد"
+                          : "يوجد ساعات اضافيه",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                          fontFamily: "Cairo"),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 4,
+            ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.max,

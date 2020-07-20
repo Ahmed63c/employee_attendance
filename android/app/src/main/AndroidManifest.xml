@@ -11,9 +11,9 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="employeeattendance"
+        android:label="Shield"
         android:requestLegacyExternalStorage="true"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/logolaunch">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

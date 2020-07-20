@@ -157,7 +157,7 @@ class _AdminHomeState extends State<AdminHome> {
                         context,
                         MaterialPageRoute(
                             builder: (contex)=>
-                                EmployeeList(model.attendance, "بيانات الحضور")
+                                EmployeeList(model.attendance,"بيانات الحضور")
                       )):{};
                     },
                   ),
@@ -190,7 +190,12 @@ class _AdminHomeState extends State<AdminHome> {
                           fontFamily: "Cairo"),
                     ),
                     onTap: () {
-                      type=="day"?EmployeeList(model.absent, "بيانات الغياب"):{};
+                      type=="day"?Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (contex)=>
+                                  EmployeeList(model.absent,"بيانات الغياب")
+                          )):{};
                     },
                   ),
                   circularStrokeCap: CircularStrokeCap.round,

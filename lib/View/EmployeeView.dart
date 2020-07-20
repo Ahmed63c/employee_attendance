@@ -78,9 +78,11 @@ class EmployeeViewState extends State<EmployeeView> {
               bottom: MediaQuery.of(context).size.height/ MediaQuery.of(context).size.height+20,
               left: 20,
               right: 20,
-              child: Text("تم التسجيل بنجاح",
-                    style:
-                    TextStyle(fontSize: 14,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.green),),
+              child: Material(
+                child: Text("تم التسجيل بنجاح",
+                      style:
+                      TextStyle(fontSize: 16,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.green),),
+              ),
                 )
           ),
 

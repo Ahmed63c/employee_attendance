@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:employeeattendance/Models/EmployeeDetail.dart';
 import 'package:employeeattendance/Utils/AppProperties.dart';
 import 'package:employeeattendance/View/EmployeeData.dart';
@@ -105,6 +106,7 @@ class EmployeeList extends StatelessWidget {
 
       Printing.sharePdf(bytes: pdf.save(), filename: 'my-document.pdf');
     }
+
     downloadAbsent() async {
       final pdfLib.Document pdf = pdfLib.Document();
       final PdfImage assetImage = await pdfImageFromImageProvider(
@@ -156,26 +158,16 @@ class EmployeeList extends StatelessWidget {
 
             pdfLib.Table.fromTextArray(context: ctx, data: <List<String>>[
               <String>[
-                'مكان الانصراف',
-                'ميعاد الانصراف',
-                'مكان الدخول',
-                'ميعاد الدخول',
-                'الساعات الاضافيه',
-                'المرتب',
+                'مرتب العامل',
                 'كود العامل',
                 'اسم العامل'
               ],
               ...data.map((item) => [
-                item.leavingLocation.toString(),
-                item.leavingTime.toString(),
-                item.attendingLocation.toString(),
-                item.attendingTime.toString(),
-                item.additionalHours.toString(),
-                item.salary.toString(),
+                item.salary.toString()+" ",
                 item.code.toString(),
                 item.name.toString()
               ])
-            ]),
+            ],defaultColumnWidth:pdfLib.IntrinsicColumnWidth(flex: 24)),
           ],
         ),
       );
@@ -186,8 +178,9 @@ class EmployeeList extends StatelessWidget {
 //      final File file = File(path);
 //      await file.writeAsBytes(pdf.save());
 
-      Printing.sharePdf(bytes: pdf.save(), filename: 'my-document.pdf');
+      Printing.sharePdf(bytes: pdf.save(), filename: '$pdftitile.pdf');
     }
+
 
 
     return Scaffold(
@@ -198,9 +191,16 @@ class EmployeeList extends StatelessWidget {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.cloud_download),
-              color: Colors.black,
+              color: Colors.blue,
               onPressed: () {
-                download();
+                if(getVisibility()){
+                  download();
+                }
+                else{
+                  downloadAbsent();
+                }
+
+
               },
             ),
           ],
@@ -366,9 +366,9 @@ class EmployeeList extends StatelessWidget {
                     child: Container(
                       margin: EdgeInsets.only(left: 4, right: 4, top: 8),
                       child: Text(
-                        data[index].additionalHours == null
-                            ? ""
-                            : data[index].additionalHours,
+                        data[index].additionalHours == "0"
+                            ? "لايوجد"
+                            : "يوجد ساعات اضافيه",
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -399,7 +399,7 @@ class EmployeeList extends StatelessWidget {
                       },
                     ),
                     maxRadius: 32,
-                    backgroundImage: NetworkImage(data[index].attendingImg),
+                    backgroundImage:CachedNetworkImageProvider(data[index].attendingImg== null ? "" : data[index].attendingImg) ,
                   ),
                   Flexible(
                     child: Column(
@@ -469,9 +469,7 @@ class EmployeeList extends StatelessWidget {
                       },
                     ),
                     maxRadius: 32,
-                    backgroundImage: NetworkImage(data[index].leavingImg == null
-                        ? ""
-                        : data[index].leavingImg),
+                    backgroundImage: CachedNetworkImageProvider(data[index].leavingImg == null ? "" : data[index].leavingImg),
                   ),
                   Flexible(
                     child: Column(

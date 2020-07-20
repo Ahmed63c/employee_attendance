@@ -36,7 +36,7 @@ class RegisterEmployeeViewModel with ChangeNotifier{
     try {
 
       webService.options.contentType="multipart/form-data";
-      final response = await webService.post("",data: formData);
+      final response = await webService.post("/api.php",data: formData);
 
       if (response.statusCode == 200) {
 
