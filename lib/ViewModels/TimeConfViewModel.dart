@@ -46,8 +46,6 @@ class TimeConfViewModel with ChangeNotifier{
           endDay=timeConf.time.day_end_time;
           startExp=timeConf.time.thursday_start_time;
           endExp=timeConf.time.thursday_end_time;
-          print(timeConf.time.thursday_start_time);
-          print(timeConf.time.thursday_end_time);
           this.loadingStatus=LoadingStatus.completed;
 
         }
@@ -91,13 +89,14 @@ class TimeConfViewModel with ChangeNotifier{
       "dayEndTime":endTime,"ThursdayStartTime":startTimeThursday,"ThursdayEndTime":endTimeThursday});
 
 
-      print(response.statusCode.toString());
-
       if (response.statusCode == 200) {
         var parsedJson = json.decode(response.data);
         _baseResponse=BaseResponse.fromJson(parsedJson);
-        print(response.data.toString());
 
+        startDay=startTime;
+        endDay=endTime;
+        startExp=startTimeThursday;
+        endExp=endTimeThursday;
 
         if(_baseResponse.status=="01"){
           success="تم تعديل البيانات بنجاح";

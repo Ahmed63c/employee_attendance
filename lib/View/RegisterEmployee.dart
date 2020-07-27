@@ -48,10 +48,10 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
       WidgetsBinding.instance.addPostFrameCallback((_){
         // Add Your Code here.
         if(model.loadingStatus==LoadingStatus.completed){
+          codeController.clear();
           model.loadingStatus=LoadingStatus.empty;
         }
       });
-
       return Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(
@@ -65,95 +65,107 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
           ),
           elevation: 4,
         ),
-        body: ListView(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(left: 16,right: 16,top: 24),
-              child: TextFormField(
-                autofocus: false,
-                obscureText:false,
-                keyboardType: TextInputType.number,
-                controller: codeController,
-                decoration: InputDecoration(
-                  hintText: "كود العامل",
-                  errorText: _validate ? 'لا يمكن ان يكون الحقل فارغا' : null,
+        body:Stack(children: <Widget>[
+          ListView(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(left: 16,right: 16,top: 24),
+                child: TextFormField(
+                  autofocus: false,
+                  obscureText:false,
+                  keyboardType: TextInputType.number,
+                  controller: codeController,
+                  decoration: InputDecoration(
+                    hintText: "كود العامل",
+                    errorText: _validate ? 'لا يمكن ان يكون الحقل فارغا' : null,
 
-                  contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+                    contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0,horizontal: 64),
-              child: Center(
-                child: DropdownButton<String>(
-                  hint: Text(selectedText),
-                  items: <String>['حضور', 'انصراف'].map((String value) {
-                    return new DropdownMenuItem<String>(
-                      value: value,
-                      child: new Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0,horizontal: 64),
+                child: Center(
+                  child: DropdownButton<String>(
+                    hint: Text(selectedText),
+                    items: <String>['حضور', 'انصراف'].map((String value) {
+                      return new DropdownMenuItem<String>(
+                        value: value,
+                        child: new Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        this.selectedText=value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: model.loadingStatus==LoadingStatus.error,
+                child:Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child:Center(
+                      child: Text(model.error,
+                        style:
+                        TextStyle(fontSize: 14,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.red),),
+                    )),
+              ),
+              Visibility(
+                visible: model.loadingStatus==LoadingStatus.completed,
+                child:Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: Center(
+                      child: Text("تم تسجيل العامل بنجاح",
+                        style:
+                        TextStyle(fontSize: 14,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.green),),
+                    )),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 32.0,horizontal: 48),
+                child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  onPressed: () {
                     setState(() {
-                      this.selectedText=value;
+                      codeController.text.isEmpty ? _validate = true : _validate = false;
                     });
+
+                    if(!_validate){
+                      if(selectedText=="حضور"){
+                        getImage("attending", codeController.text);
+                      }
+                      else{
+                        getImage("leaving", codeController.text);
+                      }
+                    }
+
                   },
+                  padding: EdgeInsets.only(left: 32,right: 32,top: 12,bottom: 12),
+                  color:Colors.green,
+                  child: Text("سجل عامل", style: TextStyle(color: Colors.white)),
                 ),
-              ),
-            ),
-            Visibility(
-              visible:model.loadingStatus==LoadingStatus.searching,
-              child: Center(child: CupertinoActivityIndicator()),
-            ),
-            Visibility(
-              visible: model.loadingStatus==LoadingStatus.error,
-              child:Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  child:Center(
-                    child: Text(model.error,
-                      style:
-                      TextStyle(fontSize: 14,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.red),),
-                  )),
-            ),
-            Visibility(
-              visible: model.loadingStatus==LoadingStatus.completed,
-              child:Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  child: Center(
-                    child: Text("تم تسجيل العامل بنجاح",
-                      style:
-                      TextStyle(fontSize: 14,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.green),),
-                  )),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 32.0,horizontal: 48),
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                onPressed: () {
-                  setState(() {
-                    codeController.text.isEmpty ? _validate = true : _validate = false;
-                  });
+              )
+            ],
+          ),
+          Visibility(
+              visible:LoadingStatus.searching==model.loadingStatus,
+              child:Stack(children: <Widget>[
+                Container(width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  color: Colors.black12,),
+                Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[ CupertinoActivityIndicator(radius: 16,),Text("تحميل...")])),
 
-                  if(!_validate){
-                    if(selectedText=="حضور"){
-                      getImage("attending", codeController.text);
-                    }
-                    else{
-                      getImage("leaving", codeController.text);
-                    }
-                  }
-
-                },
-                padding: EdgeInsets.only(left: 32,right: 32,top: 12,bottom: 12),
-                color:Colors.green,
-                child: Text("سجل عامل", style: TextStyle(color: Colors.white)),
-              ),
-            )
-          ],
-        ),
+              ],))
+        ],
+        )
       );
     });
 
@@ -265,10 +277,19 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
   void getImage(String type,String code) async {
     var image = await ImagePicker.platform.pickImage(source: ImageSource.camera);
-    final File file = File(image.path);
-    String imagePath=image.path;
-    String fileName=image.path.split('/').last;
-    _getLocation(type,code,imagePath,fileName);
+    if(image!=null){
+      vm.loadingStatus=LoadingStatus.searching;
+      vm.notifyListeners();
+      final File file = File(image.path);
+      String imagePath=image.path;
+      String fileName=image.path.split('/').last;
+      _getLocation(type,code,imagePath,fileName);
+    }
+    else{
+      vm.loadingStatus=LoadingStatus.error;
+      vm.error="حدث خطأ في الحصول علي الصوره حاول ثانيه";
+      vm.notifyListeners();
+    }
 
   }
 

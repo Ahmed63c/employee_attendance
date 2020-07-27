@@ -54,13 +54,18 @@ class EmployeeViewState extends State<EmployeeView> {
           // Use SomeExpensiveWidget here, without rebuilding every time.
           child,
           Visibility(
-            visible:model.loadingStatus==LoadingStatus.searching,
-            child: Positioned(
-                bottom: MediaQuery.of(context).size.height/ MediaQuery.of(context).size.height+20,
-                left: 20,
-                right: 20,
-                child: CupertinoActivityIndicator()),
-          ),
+              visible:LoadingStatus.searching==model.loadingStatus,
+              child:Stack(children: <Widget>[
+                Container(width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  color: Colors.black12,),
+                Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[ CupertinoActivityIndicator(radius: 16,),Text("تحميل...")])),
+
+              ],)),
           Visibility(
             visible: model.loadingStatus==LoadingStatus.error,
             child:Positioned(
@@ -68,7 +73,7 @@ class EmployeeViewState extends State<EmployeeView> {
                 left: 20,
                 right: 20,
                 child: Material(
-                  child: Text(model.error, style: TextStyle(fontSize: 16,fontWeight:
+                  child: Text(model.error, style: TextStyle(fontSize: 20,fontWeight:
                   FontWeight.w500,fontFamily: "Cairo",color: Colors.red),),
                 )),
           ),
@@ -81,7 +86,7 @@ class EmployeeViewState extends State<EmployeeView> {
               child: Material(
                 child: Text("تم التسجيل بنجاح",
                       style:
-                      TextStyle(fontSize: 16,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.green),),
+                      TextStyle(fontSize: 20,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.green),),
               ),
                 )
           ),
@@ -320,6 +325,7 @@ class EmployeeViewState extends State<EmployeeView> {
   }
 
   _getLocation(String type,String code,String imagePath,String fileName) async {
+    runFirst();
     final postion = await Geolocator()
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(
@@ -361,10 +367,21 @@ class EmployeeViewState extends State<EmployeeView> {
 
   void getImage(String type,String code) async {
     var image = await ImagePicker.platform.pickImage(source: ImageSource.camera);
-   final File file = File(image.path);
-   String imagePath=image.path;
-   String fileName=image.path.split('/').last;
-   _getLocation(type,code,imagePath,fileName);
+;
+   if(image!=null){
+     vm.loadingStatus=LoadingStatus.searching;
+     vm.notifyListeners();
+     final File file = File(image.path);
+     String imagePath=image.path;
+     String fileName=image.path.split('/').last;
+     _getLocation(type,code,imagePath,fileName);
+   }
+   else{
+     vm.loadingStatus=LoadingStatus.error;
+     vm.error="حدث خطأ في الحصول علي الصوره حاول ثانيه";
+     vm.notifyListeners();
+
+   }
 
   }
 

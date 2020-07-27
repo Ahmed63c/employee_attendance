@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:employeeattendance/Models/EmployeeDetail.dart';
 import 'package:employeeattendance/Utils/AppProperties.dart';
-import 'package:employeeattendance/View/EmployeeData.dart';
 import 'package:employeeattendance/Widget/ImageDialoge.dart';
 import 'package:employeeattendance/Widget/imageProfie.dart';
 import 'package:flutter/cupertino.dart';
@@ -52,24 +51,24 @@ class EmployeeList extends StatelessWidget {
           theme: theme,
           build: (ctx) => [
             pdfLib.Column(
-              crossAxisAlignment: pdfLib.CrossAxisAlignment.start,
-              children: [
-                   pdfLib.Container(
-                     margin: pdfLib.EdgeInsets.only(left: 24,right: 24,top: 24),
-                     child: pdfLib.Image(assetImage)),
-                pdfLib.Center(
-                  child:pdfLib.Text("شركة شيلد للانشاءات المتخصصة", textDirection: pdfLib.TextDirection.rtl),
+                crossAxisAlignment: pdfLib.CrossAxisAlignment.start,
+                children: [
+                  pdfLib.Container(
+                      margin: pdfLib.EdgeInsets.only(left: 24,right: 24,top: 24),
+                      child: pdfLib.Image(assetImage)),
+                  pdfLib.Center(
+                    child:pdfLib.Text("شركة شيلد للانشاءات المتخصصة", textDirection: pdfLib.TextDirection.rtl),
 
-                )
-              ]
-              
+                  )
+                ]
+
             ),
-           pdfLib.Container(
-             margin: pdfLib.EdgeInsets.only(top: 24),
-             child:  pdfLib.Center(
-               child: pdfLib.Text(pdftitile, textDirection: pdfLib.TextDirection.rtl),
-             )
-           )
+            pdfLib.Container(
+                margin: pdfLib.EdgeInsets.only(top: 24),
+                child:  pdfLib.Center(
+                  child: pdfLib.Text(pdftitile, textDirection: pdfLib.TextDirection.rtl),
+                )
+            )
             ,
 
             pdfLib.Table.fromTextArray(context: ctx, data: <List<String>>[
@@ -84,15 +83,15 @@ class EmployeeList extends StatelessWidget {
                 'اسم العامل'
               ],
               ...data.map((item) => [
-                    item.leavingLocation.toString(),
-                    item.leavingTime.toString(),
-                    item.attendingLocation.toString(),
-                    item.attendingTime.toString(),
-                    item.additionalHours.toString(),
-                    item.salary.toString()+" ",
-                    item.code.toString(),
-                    item.name.toString()
-                  ])
+                item.leavingLocation.toString(),
+                item.leavingTime.toString(),
+                item.attendingLocation.toString(),
+                item.attendingTime.toString(),
+                item.additionalHours.toString(),
+                item.salary.toString()+" ",
+                item.code.toString(),
+                item.name.toString()
+              ])
             ],defaultColumnWidth:pdfLib.IntrinsicColumnWidth(flex: 24)),
           ],
         ),
@@ -106,7 +105,6 @@ class EmployeeList extends StatelessWidget {
 
       Printing.sharePdf(bytes: pdf.save(), filename: 'my-document.pdf');
     }
-
     downloadAbsent() async {
       final pdfLib.Document pdf = pdfLib.Document();
       final PdfImage assetImage = await pdfImageFromImageProvider(
@@ -181,8 +179,6 @@ class EmployeeList extends StatelessWidget {
       Printing.sharePdf(bytes: pdf.save(), filename: '$pdftitile.pdf');
     }
 
-
-
     return Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(
@@ -239,6 +235,9 @@ class EmployeeList extends StatelessWidget {
                       ))),
           ],
         ));
+
+
+
   }
 
   Widget listViewItem(BuildContext context, int index) {

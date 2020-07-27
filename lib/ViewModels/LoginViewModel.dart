@@ -4,7 +4,6 @@ import 'package:employeeattendance/Models/User.dart';
 import 'package:employeeattendance/Network/ApiClient.dart';
 import 'package:employeeattendance/Network/WebService.dart';
 import 'package:employeeattendance/Utils/Constant.dart';
-import 'package:employeeattendance/Utils/LoadingStatus.dart';
 import 'package:employeeattendance/Utils/SharedPrefrence.dart';
 import 'package:flutter/cupertino.dart';
 

@@ -16,6 +16,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage>
     with SingleTickerProviderStateMixin {
   TextEditingController controller = TextEditingController();
+  SearchViewModel vm;
 
 
   @override
@@ -29,6 +30,7 @@ class _SearchPageState extends State<SearchPage>
   }
   @override
   Widget build(BuildContext context) {
+    vm=Provider.of<SearchViewModel>(context);
     return Material(
       color: Colors.white,
       child: SafeArea(
@@ -75,6 +77,9 @@ class _SearchPageState extends State<SearchPage>
                           suffix: FlatButton(
                               onPressed: () {
                                 controller.clear();
+                                vm.searchResults.clear();
+                                vm.notifyListeners();
+
                               },
                               child: Text(
                                 AppLocalizations.of(context).translate("clear"),
@@ -103,10 +108,17 @@ class _SearchPageState extends State<SearchPage>
   Widget switchWidget(BuildContext context, SearchViewModel model) {
     switch (model.loadingStatus) {
       case LoadingStatus.searching:
-        return  Visibility(
-          visible: true,
-          child: Center(child: CupertinoActivityIndicator()),
-        );
+        return
+          Visibility(
+              visible:true,
+              child:Stack(children: <Widget>[
+                Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[ CupertinoActivityIndicator(radius: 16,),Text("تحميل...")])),
+
+              ],));
       case LoadingStatus.error:
         return Visibility(
           visible: true,

@@ -121,17 +121,13 @@ class _LoginPageState extends State<Login> {
 
 
     Widget form(BuildContext context,LoginViewModel model){
-      return   Form(
+      return   Stack(children: <Widget>[
+        Form(
         key: formKey,
         child: Center(
           child: ListView(
             children: <Widget>[
               logo,
-              SizedBox(height: 32.0),
-              Visibility(
-                visible: isVisable(model),
-                child: Center(child: CupertinoActivityIndicator()),
-              ),
               SizedBox(height: 32.0),
               code,
               SizedBox(height: 8.0),
@@ -139,7 +135,7 @@ class _LoginPageState extends State<Login> {
               Visibility(
                 visible: error(model),
                 child:Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
+                    margin: EdgeInsets.symmetric(horizontal: 20),
                     child: Text(model.error,
                       style:
                       TextStyle(fontSize: 14,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.red),)),
@@ -149,7 +145,23 @@ class _LoginPageState extends State<Login> {
             ],
           ),
         ),
-      );
+      ),
+        Visibility(
+            visible:LoadingStatus.searching==model.loadingStatus,
+            child:Stack(children: <Widget>[
+              Container(width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                color: Colors.black12,),
+              Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[ CupertinoActivityIndicator(radius: 16,),Text("تحميل...")])),
+
+            ],))
+
+      ],);
+
     }
 
     return Consumer<LoginViewModel>(
@@ -159,7 +171,6 @@ class _LoginPageState extends State<Login> {
           // Add Your Code here.
           if(model.loadingStatus==LoadingStatus.completed){
             model.loadingStatus=LoadingStatus.empty;
-
             if(model.user_type=="admin"){
               Navigator.pushReplacement(
                 context,

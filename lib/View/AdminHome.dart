@@ -98,12 +98,24 @@ class _AdminHomeState extends State<AdminHome> {
     );
   }
 
+
+
+
   Widget switchWidget(BuildContext context, AdminViewModel model) {
     switch (model.loadingStatus) {
       case LoadingStatus.searching:
         return Visibility(
           visible: true,
-          child: Center(child: CupertinoActivityIndicator()),
+          child: Stack(children: <Widget>[
+            Container(
+              color: Colors.transparent,),
+            Align(
+                alignment: Alignment.center,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[ CupertinoActivityIndicator(radius: 16,),Text("تحميل...")])),
+
+          ])
         );
       case LoadingStatus.error:
         return Visibility(

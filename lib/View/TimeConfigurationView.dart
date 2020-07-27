@@ -41,7 +41,9 @@ class _Time  extends State<TimeConfiguration> {
                 endDayController.text=model.endDay;
                 startEXPController.text=model.startExp;
                 endEXPController.text=model.endExp;
+                //then clear value
                 model.loadingStatus=LoadingStatus.empty;
+
               }
             });
             return Scaffold(
@@ -57,18 +59,19 @@ class _Time  extends State<TimeConfiguration> {
                 ),
                 elevation: 4,
               ),
-              body: ListView(
+              body: Stack(children: <Widget>[
+                ListView(
                   children: <Widget>[
                     SizedBox(height: 24,),
                     Padding(
                       padding: EdgeInsets.only(left: 16,right: 16,top: 16),
-                       child: TextFormField(
+                      child: TextFormField(
                         controller: startDayController,
                         readOnly: true,
                         decoration: InputDecoration(
                           labelText: "بداية يوم عادي",
                           floatingLabelBehavior: FloatingLabelBehavior.always,
-                            contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                          contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
                           icon:IconButton(icon: Icon(Icons.alarm_add),
                             onPressed: (){
@@ -133,10 +136,6 @@ class _Time  extends State<TimeConfiguration> {
                       ),
                     ),
                     Visibility(
-                      visible:LoadingStatus.searching==model.loadingStatus,
-                      child: Center(child: CupertinoActivityIndicator()),
-                    ),
-                    Visibility(
                       visible: model.loadingStatus==LoadingStatus.error,
                       child:Container(
                           margin: EdgeInsets.symmetric(horizontal: 20),
@@ -164,12 +163,12 @@ class _Time  extends State<TimeConfiguration> {
                           ),
                           onPressed: () {
                             print("button clicked");
-                              StorageUtil.getInstance().then((storage){
-                                String token=  StorageUtil.getString(Constant.SHARED_USER_TOKEN);
-                                Provider.of<TimeConfViewModel>(context, listen: false)
-                                    .doUpdateConfigurationSetting(token,startDayController.text
-                                    ,endDayController.text,startEXPController.text,endEXPController.text);
-                              });
+                            StorageUtil.getInstance().then((storage){
+                              String token=  StorageUtil.getString(Constant.SHARED_USER_TOKEN);
+                              Provider.of<TimeConfViewModel>(context, listen: false)
+                                  .doUpdateConfigurationSetting(token,startDayController.text
+                                  ,endDayController.text,startEXPController.text,endEXPController.text);
+                            });
                           },
                           padding: EdgeInsets.only(left: 32,right: 32,top: 12,bottom: 12),
                           color:AppProperties.navylogo,
@@ -178,7 +177,24 @@ class _Time  extends State<TimeConfiguration> {
                       ),
                     )
                   ],
-                ),);
+                ),
+                Visibility(
+                    visible:LoadingStatus.searching==model.loadingStatus,
+                    child:Stack(children: <Widget>[
+                      Container(width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        color: Colors.black12,),
+                      Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[ CupertinoActivityIndicator(radius: 16,),Text("تحميل...")])),
+
+                    ],))
+
+              ],)
+
+            );
 
           });
   }

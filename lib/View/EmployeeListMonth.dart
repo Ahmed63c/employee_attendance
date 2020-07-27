@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:employeeattendance/Models/EmployeeDetail.dart';
 import 'package:employeeattendance/Models/Month.dart';
 import 'package:employeeattendance/Utils/AppProperties.dart';
-import 'package:employeeattendance/View/EmployeeData.dart';
 import 'package:employeeattendance/Widget/ImageDialoge.dart';
 import 'package:employeeattendance/Widget/imageProfie.dart';
 import 'package:flutter/cupertino.dart';
