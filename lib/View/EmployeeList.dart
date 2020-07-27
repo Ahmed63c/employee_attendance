@@ -103,7 +103,7 @@ class EmployeeList extends StatelessWidget {
 //      final File file = File(path);
 //      await file.writeAsBytes(pdf.save());
 
-      Printing.sharePdf(bytes: pdf.save(), filename: 'my-document.pdf');
+      Printing.sharePdf(bytes: pdf.save(), filename: '$pdftitile.pdf');
     }
     downloadAbsent() async {
       final pdfLib.Document pdf = pdfLib.Document();
@@ -169,12 +169,6 @@ class EmployeeList extends StatelessWidget {
           ],
         ),
       );
-
-//      final String dir = (await getApplicationDocumentsDirectory()).path;
-//      print(dir);
-//      final String path = '$dir/employees.pdf';
-//      final File file = File(path);
-//      await file.writeAsBytes(pdf.save());
 
       Printing.sharePdf(bytes: pdf.save(), filename: '$pdftitile.pdf');
     }

@@ -98,7 +98,7 @@ class EmployeeListMonth extends StatelessWidget {
           ],
         ),
       );
-      Printing.sharePdf(bytes: pdf.save(), filename: 'my-document.pdf');
+      Printing.sharePdf(bytes: pdf.save(), filename: '$pdftitile.pdf');
     }
 
 
