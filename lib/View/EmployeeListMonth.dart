@@ -76,9 +76,17 @@ class EmployeeListMonth extends StatelessWidget {
             pdfLib.Table.fromTextArray(context: ctx,
                 data: <List<String>>[
               <String>[
-                ' ايام الانصراف مبكر', ' ايام التأخير ', ' ايام الغياب ', '  مرتب العامل  ', 'كود العامل ', 'اسم العامل '
+                ' ايام الساعات الاضافيه',
+                ' ايام الانصراف مبكر',
+                ' ايام التأخير ',
+                ' ايام الغياب ',
+                '  مرتب العامل  ',
+                'كود العامل ',
+                'اسم العامل '
               ],
-              ...data.map((item) => [getDAtes(item.earlyLeftDates),
+              ...data.map((item) => [
+                getDAtes(item.additionalHoursDates),
+                getDAtes(item.earlyLeftDates),
                 getDAtes(item.lateDates),
                 getDAtes(item.absentDates),
                 item.salary.toString()+" ",
@@ -90,13 +98,6 @@ class EmployeeListMonth extends StatelessWidget {
           ],
         ),
       );
-
-//      final String dir = (await getApplicationDocumentsDirectory()).path;
-//      print(dir);
-//      final String path = '$dir/employees.pdf';
-//      final File file = File(path);
-//      await file.writeAsBytes(pdf.save());
-
       Printing.sharePdf(bytes: pdf.save(), filename: 'my-document.pdf');
     }
 
@@ -126,7 +127,7 @@ class EmployeeListMonth extends StatelessWidget {
         body: Column(
           children: <Widget>[
             Flexible(
-                child: data.length != 0
+                child: data!=null
                     ? ListView.separated(
                     itemCount: data.length,
                     shrinkWrap: true,
@@ -141,7 +142,7 @@ class EmployeeListMonth extends StatelessWidget {
                     itemBuilder: (_, index) => listViewItem(context, index))
                     : Center(
                     child: Text(
-                      'لاتوجد بيانات اليوم عن ${pdftitile}',
+                      'لاتوجد بيانات  عن ${pdftitile}',
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -276,7 +277,7 @@ class EmployeeListMonth extends StatelessWidget {
                   child: Container(
                     margin: EdgeInsets.only(left: 4, right: 4, top: 8),
                     child: Text(
-                      data[index].additionalHours == "0"
+                      data[index].additionalHoursDates.isEmpty
                           ? "لايوجد"
                           : "يوجد ساعات اضافيه",
                       overflow: TextOverflow.ellipsis,

@@ -124,7 +124,7 @@ class AdminViewModel with ChangeNotifier{
         }
         else{
           this.loadingStatus = LoadingStatus.error;
-          error=report.message;
+          error="لاتوجد بيانات عن هذا الشهر";
           notifyListeners();
         }
       }
