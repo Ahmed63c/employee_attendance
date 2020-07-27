@@ -58,12 +58,15 @@ class EmployeeViewState extends State<EmployeeView> {
               child:Stack(children: <Widget>[
                 Container(width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
-                  color: Colors.black12,),
+                  color: Colors.white60,),
                 Align(
                     alignment: Alignment.center,
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[ CupertinoActivityIndicator(radius: 16,),Text("تحميل...")])),
+                        children: <Widget>[ CupertinoActivityIndicator(radius: 20,),
+                          Material(
+                            color: Colors.transparent,
+                              child: Text("تحميل..."))])),
 
               ],)),
           Visibility(
