@@ -19,6 +19,7 @@ class LoginViewModel with ChangeNotifier{
   LoadingStatus loadingStatus=LoadingStatus.empty;
   String error="";
   String user_type="";
+  User user;
   void doLogin(String code,String pass)  async{
 
     this.loadingStatus = LoadingStatus.searching;
@@ -30,10 +31,11 @@ class LoginViewModel with ChangeNotifier{
       if (response.statusCode == 200) {
 
         var parsedJson = json.decode(response.data);
-        User user = User.fromJson(parsedJson);
+        user = User.fromJson(parsedJson);
         if(user.status=="01"){
+          if(user.appVersion==Constant.APP_VERSION){
             this.user_type=user.details.type;
-           StorageUtil.getInstance().then((storage){
+            StorageUtil.getInstance().then((storage){
               StorageUtil.putString(Constant.SHARED_USER_NAME, user.details.name);
               StorageUtil.putString(Constant.SHARED_USER_TYPE, user.details.type);
               StorageUtil.putString(Constant.SHARED_USER_TOKEN, user.details.token);
@@ -41,6 +43,14 @@ class LoginViewModel with ChangeNotifier{
 
             this.loadingStatus=LoadingStatus.completed;
             notifyListeners();
+          }
+          else{
+            this.loadingStatus = LoadingStatus.error;
+            error="تم تحديث نسخه التطبيق من فضلك حمل النسخة الجديدة";
+            notifyListeners();
+
+          }
+
         }
         else{
           this.loadingStatus = LoadingStatus.error;

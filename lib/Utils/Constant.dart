@@ -7,6 +7,8 @@ class Constant{
   static const String SHARED_USER_location="location";
   static const String SHARED_USER_lat="latitude";
   static const String SHARED_USER_lang="langitude";
+  static const String APP_VERSION="1";
+
 
 
 

@@ -113,7 +113,8 @@ class _ChangePassword extends State<ChangePassword> {
                       if(!_validate){
                         StorageUtil.getInstance().then((storage){
                           String token=  StorageUtil.getString(Constant.SHARED_USER_TOKEN);
-                          Provider.of<ChangePasswordViewModel>(context, listen: false).doChangePassword(token,controller.text,controllerPass.text);
+                          Provider.of<ChangePasswordViewModel>(context, listen: false).doChangePassword(
+                              token,controller.text,controllerPass.text);
                         });
 
                       }

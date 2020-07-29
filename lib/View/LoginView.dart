@@ -138,7 +138,7 @@ class _LoginPageState extends State<Login> {
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     child: Text(model.error,
                       style:
-                      TextStyle(fontSize: 14,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.red),)),
+                      TextStyle(fontSize: 16,fontWeight: FontWeight.w500,fontFamily: "Cairo",color: Colors.red),)),
               ),
               SizedBox(height: 16.0),
               loginBtn(context, model),
@@ -158,8 +158,17 @@ class _LoginPageState extends State<Login> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[ CupertinoActivityIndicator(radius: 16,),Text("تحميل...")])),
 
-            ],))
-
+            ],)),
+        Visibility(
+          visible:model.error=="تم تحديث نسخه التطبيق من فضلك حمل النسخة الجديدة" ,
+          child: AlertDialog(
+            title: Text(" تحديث جديد"),
+            content: const Text(
+                'تم تحديث نسخه التطبيق من فضلك حمل النسخة الجديدة'),
+            actions: <Widget>[
+            ],
+          ),
+        )
       ],);
 
     }
@@ -193,35 +202,16 @@ class _LoginPageState extends State<Login> {
       }
       // Build the expensive widget here.
     );
-
-//    return Scaffold(
-//        key: _scaffFoledKey,
-//        backgroundColor: Colors.white,
-//        body: form
-//
-//    );
-
-//    return Consumer<LoginViewModel>(
-//      builder: (context, model, child) {
-//            return Scaffold(
-//        key: _scaffFoledKey,
-//        backgroundColor: Colors.white,
-//        body: formnew(context,model)
-//            );
-//            },
-//    );
   }
 
   bool isVisable(LoginViewModel vs) {
     bool v=false;
 
     if(vs.loadingStatus==LoadingStatus.searching){
-      print("seracho");
       v=true;
 
     }
     else if(vs.loadingStatus==LoadingStatus.completed){
-      print("complete call");
       v=false;
     }
 
