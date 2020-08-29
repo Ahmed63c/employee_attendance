@@ -3,26 +3,36 @@ class Detail {
     String attendingImg;
     String attendingLocation;
     String attendingTime;
+    String attendingLatitude;
+    String attendingLongitude;
     String code;
     String leavingImg;
     String leavingLocation;
     String leavingTime;
+    String leavingLatitude;
+    String leavingLongitude;
     String name;
     String salary;
     String type;
 
-    Detail({this.additionalHours, this.attendingImg, this.attendingLocation, this.attendingTime, this.code, this.leavingImg, this.leavingLocation, this.leavingTime, this.name, this.salary, this.type});
+    Detail({this.additionalHours, this.attendingImg, this.attendingLocation,
+        this.attendingTime,this.attendingLatitude,this.attendingLongitude,
+        this.code, this.leavingImg, this.leavingLocation, this.leavingTime,this.leavingLatitude,this.leavingLongitude, this.name, this.salary, this.type});
 
     factory Detail.fromJson(Map<String, dynamic> json) {
         return Detail(
             additionalHours: json['additionalHours'], 
             attendingImg: json['attendingImg'], 
             attendingLocation: json['attendingLocation'], 
-            attendingTime: json['attendingTime'], 
+            attendingTime: json['attendingTime'],
+            attendingLatitude: json['attendingLatitude'],
+            attendingLongitude: json['attendingLongitude'],
             code: json['code'], 
             leavingImg: json['leavingImg'], 
             leavingLocation: json['leavingLocation'], 
-            leavingTime: json['leavingTime'], 
+            leavingTime: json['leavingTime'],
+            leavingLatitude: json['leavingLatitude'],
+            leavingLongitude: json['leavingLongitude'],
             name: json['name'], 
             salary: json['salary'], 
             type: json['type'], 

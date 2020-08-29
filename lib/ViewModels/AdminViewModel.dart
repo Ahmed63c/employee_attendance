@@ -49,30 +49,24 @@ class AdminViewModel with ChangeNotifier{
 
         var parsedJson = json.decode(response.data);
         report = Report.fromJson(parsedJson);
-        for(Detail item  in report.details){
-          switch (item.type){
-            case "is_normal":
-              this.attendance.add(item);
-              break;
-            case "is_late":
-              this.late.add(item);
-              break;
-            case "is_early_left":
-              this.early.add(item);
-              break;
-            case "is_absent":
-              this.absent.add(item);
-              break;
-          }
-        }
-
-        print("attendance length"+attendance.length.toString());
-        print("absent length"+absent.length.toString());
-        print(late.length);
-        print(early.length);
-
-
         if(report.status=="01"){
+          for(Detail item  in report.details){
+            switch (item.type){
+              case "is_normal":
+                this.attendance.add(item);
+                break;
+              case "is_late":
+                this.late.add(item);
+                break;
+              case "is_early_left":
+                this.early.add(item);
+                break;
+              case "is_absent":
+                this.absent.add(item);
+                break;
+            }
+          }
+
           this.loadingStatus=LoadingStatus.completed;
           notifyListeners();
         }

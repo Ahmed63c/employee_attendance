@@ -6,7 +6,7 @@ class DioProvider {
   static Dio instance() {
     final dio = Dio();
     dio.options=new BaseOptions(
-      baseUrl:Constant.SERVER_URL,
+      baseUrl:Constant.BASE_URL,
       receiveDataWhenStatusError: true,
       connectTimeout: 60*1000, // 60 seconds
       receiveTimeout: 60*1000,

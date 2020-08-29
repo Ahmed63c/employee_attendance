@@ -28,6 +28,7 @@ class LoginViewModel with ChangeNotifier{
     try {
       final response = await webService.get("/api.php",queryParameters: {"action":"doLogin","code":code,"password":pass});
 
+      print(response.statusCode);
       if (response.statusCode == 200) {
 
         var parsedJson = json.decode(response.data);

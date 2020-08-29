@@ -32,8 +32,18 @@ class _AdminHomeState extends State<AdminHome> {
     super.initState();
     StorageUtil.getInstance().then((storage) {
       if (type == "day") {
-        Provider.of<AdminViewModel>(context, listen: false).getDailyReport(
-            date, StorageUtil.getString(Constant.SHARED_USER_TOKEN));
+        if(date==null){
+          var now = new DateTime.now();
+          String g = ('${now.year}-${now.month}-${now.day}');
+          Provider.of<AdminViewModel>(context, listen: false).getDailyReport(
+              g, StorageUtil.getString(Constant.SHARED_USER_TOKEN));
+        }
+        else{
+          Provider.of<AdminViewModel>(context, listen: false).getDailyReport(
+              date, StorageUtil.getString(Constant.SHARED_USER_TOKEN));
+
+        }
+
       } else {
         Provider.of<AdminViewModel>(context, listen: false).getMonthlyReport(
             date, StorageUtil.getString(Constant.SHARED_USER_TOKEN));

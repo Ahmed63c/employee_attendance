@@ -12,6 +12,8 @@ import 'package:pdf/widgets.dart' as pdfLib;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:printing/printing.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class EmployeeList extends StatelessWidget {
   List<Detail> data;
@@ -49,15 +51,18 @@ class EmployeeList extends StatelessWidget {
         pdfLib.MultiPage(
           pageFormat: PdfPageFormat.a4,
           theme: theme,
-          build: (ctx) => [
+          build: (ctx) =>
+          [
             pdfLib.Column(
                 crossAxisAlignment: pdfLib.CrossAxisAlignment.start,
                 children: [
                   pdfLib.Container(
-                      margin: pdfLib.EdgeInsets.only(left: 24,right: 24,top: 24),
+                      margin: pdfLib.EdgeInsets.only(
+                          left: 24, right: 24, top: 24),
                       child: pdfLib.Image(assetImage)),
                   pdfLib.Center(
-                    child:pdfLib.Text("شركة شيلد للانشاءات المتخصصة", textDirection: pdfLib.TextDirection.rtl),
+                    child: pdfLib.Text("شركة شيلد للانشاءات المتخصصة",
+                        textDirection: pdfLib.TextDirection.rtl),
 
                   )
                 ]
@@ -65,8 +70,9 @@ class EmployeeList extends StatelessWidget {
             ),
             pdfLib.Container(
                 margin: pdfLib.EdgeInsets.only(top: 24),
-                child:  pdfLib.Center(
-                  child: pdfLib.Text(pdftitile, textDirection: pdfLib.TextDirection.rtl),
+                child: pdfLib.Center(
+                  child: pdfLib.Text(
+                      pdftitile, textDirection: pdfLib.TextDirection.rtl),
                 )
             )
             ,
@@ -82,17 +88,18 @@ class EmployeeList extends StatelessWidget {
                 'كود العامل',
                 'اسم العامل'
               ],
-              ...data.map((item) => [
+              ...data.map((item) =>
+              [
                 item.leavingLocation.toString(),
                 item.leavingTime.toString(),
                 item.attendingLocation.toString(),
                 item.attendingTime.toString(),
                 item.additionalHours.toString(),
-                item.salary.toString()+" ",
+                item.salary.toString() + " ",
                 item.code.toString(),
                 item.name.toString()
               ])
-            ],defaultColumnWidth:pdfLib.IntrinsicColumnWidth(flex: 24)),
+            ], defaultColumnWidth: pdfLib.IntrinsicColumnWidth(flex: 24)),
           ],
         ),
       );
@@ -132,15 +139,18 @@ class EmployeeList extends StatelessWidget {
         pdfLib.MultiPage(
           pageFormat: PdfPageFormat.a4,
           theme: theme,
-          build: (ctx) => [
+          build: (ctx) =>
+          [
             pdfLib.Column(
                 crossAxisAlignment: pdfLib.CrossAxisAlignment.start,
                 children: [
                   pdfLib.Container(
-                      margin: pdfLib.EdgeInsets.only(left: 24,right: 24,top: 24),
+                      margin: pdfLib.EdgeInsets.only(
+                          left: 24, right: 24, top: 24),
                       child: pdfLib.Image(assetImage)),
                   pdfLib.Center(
-                    child:pdfLib.Text("شركة شيلد للانشاءات المتخصصة", textDirection: pdfLib.TextDirection.rtl),
+                    child: pdfLib.Text("شركة شيلد للانشاءات المتخصصة",
+                        textDirection: pdfLib.TextDirection.rtl),
 
                   )
                 ]
@@ -148,8 +158,9 @@ class EmployeeList extends StatelessWidget {
             ),
             pdfLib.Container(
                 margin: pdfLib.EdgeInsets.only(top: 24),
-                child:  pdfLib.Center(
-                  child: pdfLib.Text(pdftitile, textDirection: pdfLib.TextDirection.rtl),
+                child: pdfLib.Center(
+                  child: pdfLib.Text(
+                      pdftitile, textDirection: pdfLib.TextDirection.rtl),
                 )
             )
             ,
@@ -160,12 +171,13 @@ class EmployeeList extends StatelessWidget {
                 'كود العامل',
                 'اسم العامل'
               ],
-              ...data.map((item) => [
-                item.salary.toString()+" ",
+              ...data.map((item) =>
+              [
+                item.salary.toString() + " ",
                 item.code.toString(),
                 item.name.toString()
               ])
-            ],defaultColumnWidth:pdfLib.IntrinsicColumnWidth(flex: 24)),
+            ], defaultColumnWidth: pdfLib.IntrinsicColumnWidth(flex: 24)),
           ],
         ),
       );
@@ -183,14 +195,12 @@ class EmployeeList extends StatelessWidget {
               icon: Icon(Icons.cloud_download),
               color: Colors.blue,
               onPressed: () {
-                if(getVisibility()){
+                if (getVisibility()) {
                   download();
                 }
-                else{
+                else {
                   downloadAbsent();
                 }
-
-
               },
             ),
           ],
@@ -207,36 +217,36 @@ class EmployeeList extends StatelessWidget {
             Flexible(
                 child: data.length != 0
                     ? ListView.separated(
-                        itemCount: data.length,
-                        shrinkWrap: true,
-                        separatorBuilder: (BuildContext context, int index) =>
-                            Divider(
-                              height: 24,
-                              indent: 16,
-                              endIndent: 16,
-                              color: AppProperties.lightnavylogo,
-                              thickness: 1,
-                            ),
-                        itemBuilder: (_, index) => listViewItem(context, index))
+                    itemCount: data.length,
+                    shrinkWrap: true,
+                    separatorBuilder: (BuildContext context, int index) =>
+                        Divider(
+                          height: 24,
+                          indent: 16,
+                          endIndent: 16,
+                          color: AppProperties.lightnavylogo,
+                          thickness: 1,
+                        ),
+                    itemBuilder: (_, index) => listViewItem(context, index))
                     : Center(
-                        child: Text(
-                        'لاتوجد بيانات اليوم عن ${pdftitile}',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: "Cairo",
-                            color: Colors.red),
-                      ))),
+                    child: Text(
+                      'لاتوجد بيانات اليوم عن ${pdftitile}',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: "Cairo",
+                          color: Colors.red),
+                    ))),
           ],
         ));
-
-
-
   }
 
   Widget listViewItem(BuildContext context, int index) {
     return Container(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         margin: EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,7 +402,9 @@ class EmployeeList extends StatelessWidget {
                       },
                     ),
                     maxRadius: 32,
-                    backgroundImage:CachedNetworkImageProvider(data[index].attendingImg== null ? "" : data[index].attendingImg) ,
+                    backgroundImage: CachedNetworkImageProvider(
+                        data[index].attendingImg == null ? "" : data[index]
+                            .attendingImg),
                   ),
                   Flexible(
                     child: Column(
@@ -415,7 +427,7 @@ class EmployeeList extends StatelessWidget {
                                 )),
                             Container(
                                 margin:
-                                    EdgeInsets.only(left: 8, right: 8, top: 4),
+                                EdgeInsets.only(left: 8, right: 8, top: 4),
                                 child: Text(
                                   data[index].attendingTime,
                                   style: TextStyle(
@@ -425,18 +437,24 @@ class EmployeeList extends StatelessWidget {
                                 )),
                           ],
                         ),
-                        Container(
-                            margin:
-                                EdgeInsets.only(left: 16, right: 16, top: 4),
-                            child: Text(
-                              data[index].attendingLocation,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                  fontFamily: "Cairo",
-                                  color: AppProperties.navylogo),
-                            )),
+                        GestureDetector(
+                          onTap: () {
+                            _launchMapsUrl(double.parse(data[index].attendingLatitude),
+                            double.parse(data[index].attendingLongitude));
+                          },
+                          child: Container(
+                              margin:
+                              EdgeInsets.only(left: 16, right: 16, top: 4),
+                              child: Text(
+                                data[index].attendingLocation,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    fontFamily: "Cairo",
+                                    color: AppProperties.navylogo),
+                              )),
+                        ),
                       ],
                     ),
                   )
@@ -462,7 +480,9 @@ class EmployeeList extends StatelessWidget {
                       },
                     ),
                     maxRadius: 32,
-                    backgroundImage: CachedNetworkImageProvider(data[index].leavingImg == null ? "" : data[index].leavingImg),
+                    backgroundImage: CachedNetworkImageProvider(
+                        data[index].leavingImg == null ? "" : data[index]
+                            .leavingImg),
                   ),
                   Flexible(
                     child: Column(
@@ -485,7 +505,7 @@ class EmployeeList extends StatelessWidget {
                                 )),
                             Container(
                                 margin:
-                                    EdgeInsets.only(left: 8, right: 8, top: 4),
+                                EdgeInsets.only(left: 8, right: 8, top: 4),
                                 child: Text(
                                   data[index].leavingTime == null
                                       ? ""
@@ -497,20 +517,26 @@ class EmployeeList extends StatelessWidget {
                                 )),
                           ],
                         ),
-                        Container(
-                            margin:
-                                EdgeInsets.only(left: 16, right: 16, top: 4),
-                            child: Text(
-                              data[index].leavingLocation == null
-                                  ? ""
-                                  : data[index].leavingLocation,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                  fontFamily: "Cairo",
-                                  color: AppProperties.navylogo),
-                            )),
+                        GestureDetector(
+                          onTap: (){
+                            _launchMapsUrl(double.parse(data[index].leavingLatitude),
+                                double.parse(data[index].leavingLongitude));
+                          },
+                          child: Container(
+                              margin:
+                              EdgeInsets.only(left: 16, right: 16, top: 4),
+                              child: Text(
+                                data[index].leavingLocation == null
+                                    ? ""
+                                    : data[index].leavingLocation,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    fontFamily: "Cairo",
+                                    color: AppProperties.navylogo),
+                              )),
+                        ),
                       ],
                     ),
                   )
@@ -526,13 +552,22 @@ class EmployeeList extends StatelessWidget {
   }
 
   bool getVisibility() {
-    if (pdftitile =="بيانات الغياب"){
+    if (pdftitile == "بيانات الغياب") {
       return false;
     }
 
-    else{
+    else {
       return true;
     }
-
   }
+
+  void _launchMapsUrl(double lat, double lon) async {
+    final url = 'https://www.google.com/maps/search/?api=1&query=$lat,$lon';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
 }

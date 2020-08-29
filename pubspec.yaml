@@ -44,6 +44,8 @@ dependencies:
   pdf: ^1.9.0
   printing: 3.5.0
   month_picker_dialog: ^0.3.2
+  url_launcher: ^5.5.1
+
 
 
 
